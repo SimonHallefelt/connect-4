@@ -14,8 +14,8 @@ fn starting_player() -> i8 {
 fn main() {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
-    let p1 = player::Player::new(1, 1);
-    let p2 = player::Player::new(-1, 0);
+    let p1 = player::select_player( 1);
+    let p2 = player::select_player(-1);
     println!("starting player is {}", players_turn);
     loop {
         let m;
