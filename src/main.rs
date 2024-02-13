@@ -1,6 +1,7 @@
 use rand::Rng;
 
 mod board;
+mod player;
 
 fn starting_player() -> i8 {
     let mut rng = rand::thread_rng();
@@ -12,12 +13,19 @@ fn starting_player() -> i8 {
 
 fn main() {
     let mut board = board::new_board();
-    let mut player = starting_player();
-    let mut rng = rand::thread_rng();
+    let mut players_turn = starting_player();
+    let p1 = player::Player::new(1, 1);
+    let p2 = player::Player::new(-1, 0);
+    println!("starting player is {}", players_turn);
     loop {
-        let m = rng.gen_range(0..7);
-        board::update_board(&mut board, m, player);
-        player *= -1;
+        let m;
+        if players_turn == 1 {
+            m = p1.play(&board);
+        } else {
+            m = p2.play(&board);
+        }
+        board::update_board(&mut board, m, players_turn);
+        players_turn *= -1;
     }
 }
 

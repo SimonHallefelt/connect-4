@@ -1,5 +1,4 @@
-use std::{error::{self, Error}, io::ErrorKind, net, process::exit};
-
+use std::process::exit;
 
 
 pub fn new_board() -> Vec<Vec<i8>> {
@@ -110,7 +109,7 @@ fn find_draw(board: &Vec<Vec<i8>>) -> bool {
 
 
 pub fn print_board(board: &Vec<Vec<i8>>) {
-    println!("print board");
+    println!("board:");
     for b in board {
         print!("[");
         for n in b {
@@ -126,18 +125,13 @@ pub fn print_board(board: &Vec<Vec<i8>>) {
 
 #[cfg(test)]
 mod tests {
-    use std::panic;
-
     use super::*;
 
     #[test]
     fn test_new_board() {
-        let mut board = new_board();
+        let board = new_board();
         assert_eq!(board.len(), 6);
         assert_eq!(board[0].len(), 7);
-        print_board(&board);
-        update_board(&mut board, 0, 1);
-        print_board(&board);
     }
 
 
