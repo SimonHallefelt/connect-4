@@ -2,8 +2,14 @@
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8 {
     let depth = 9;
-    let m = start_alpha_beta(board, player, depth);
-    return m;
+    if player == 1 {
+        let m = start_alpha_beta(board, player, depth);
+        return m;
+    }else {
+        let new_board = flip(board);
+        let m = start_alpha_beta(&new_board, player*-1, depth);
+        return m;
+    }
 }
 
 fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
@@ -171,6 +177,18 @@ fn get_legal_moves(board: &Vec<Vec<i8>>) -> Vec<i8> {
         }
     }
     legal_moves
+}
+
+
+fn flip(board: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
+    let mut new_board = Vec::new();
+    for i in 0..6 {
+        new_board.push(Vec::new());
+        for j in 0..7 {
+            new_board[i].push(board[i][j]*-1);
+        }
+    }
+    new_board
 }
 
 
