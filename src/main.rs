@@ -25,6 +25,9 @@ fn main() {
             m = p2.play(&board);
         }
         board::update_board(&mut board, m, players_turn);
+        if players_turn == 1 {
+            board::print_board(&board);
+        }
         players_turn *= -1;
     }
 }

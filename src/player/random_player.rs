@@ -23,7 +23,6 @@ fn get_legal_moves(board: &Vec<Vec<i8>>) -> Vec<i8> {
 mod tests {
     use super::*;
 
-
     fn new_board() -> Vec<Vec<i8>> {
         let mut board = Vec::new();
         for i in 0..6 {
