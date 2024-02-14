@@ -17,3 +17,6 @@ Human is a player that you the user controls what move will be played.
 
 ### Bot
 Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move.
+
+### Advanced Bot
+Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move. Implemented using bit-boards.

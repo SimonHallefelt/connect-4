@@ -1,4 +1,5 @@
 use rand::Rng;
+use std::time::Instant;
 
 mod board;
 mod player;
@@ -19,11 +20,13 @@ fn main() {
     println!("starting player is {}", players_turn);
     loop {
         let m;
+        let start = Instant::now();
         if players_turn == 1 {
             m = p1.play(&board);
         } else {
             m = p2.play(&board);
         }
+        println!("Time is: {:?}", start.elapsed());
         board::update_board(&mut board, m, players_turn);
         if players_turn == 1 {
             board::print_board(&board);
