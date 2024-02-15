@@ -1,7 +1,7 @@
 mod human_player;
 mod random_player;
 mod bot_player;
-mod advanced_bot_player;
+mod bit_bot_player;
 
 pub struct Player {
     player: i8,
@@ -19,7 +19,7 @@ impl Player {
 
     pub fn play(&self, board: &Vec<Vec<i8>>) -> i8 {
         match self.player_type {
-            3 => return advanced_bot_player::get_move(&board, self.player),
+            3 => return bit_bot_player::get_move(&board, self.player),
             2 => return bot_player::get_move(&board, self.player),
             1 => return human_player::get_move(&board),
             _ => return random_player::get_move(&board),
@@ -52,5 +52,5 @@ fn print_possible_players() {
     println!("0: Random");
     println!("1: Human");
     println!("2: Bot");
-    println!("3: Advanced Bot");
+    println!("3: Bit Bot");
 }

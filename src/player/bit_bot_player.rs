@@ -1,10 +1,7 @@
 use std::vec;
-
-use rand::seq::SliceRandom;
-
+use rand::{seq::SliceRandom, Rng};
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
-    let depth = 10;
     let mut bitboard: Vec<i64> = Vec::with_capacity(2);
     let mut moves: Vec<i32> = Vec::with_capacity(42);
     for _ in 0..42 {
@@ -12,29 +9,28 @@ pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
     }
     let mut height: Vec<i32> = vec![0, 7, 14, 21, 28, 35, 42];
 
-    print_board(board);
+    // print_board(board);
     if player == 1 {
         make_bitboards(board, &mut bitboard, &mut height);
-        let m = start_alpha_beta(player, depth, &mut height, &mut bitboard, &mut moves);
-        return m;
     }else {
         let new_board = flip(board);
         make_bitboards(&new_board, &mut bitboard, &mut height);
-        let m = start_alpha_beta(player*-1, depth, &mut height, &mut bitboard, &mut moves);
-        return m;
     }
 
+    let m = start_alpha_beta(&mut height, &mut bitboard, &mut moves);
+    println!("move: {}", m);
+    return m;
 }
 
 
-fn start_alpha_beta(player: i8, depth: i8, height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>) -> i8 {
+fn start_alpha_beta(height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>) -> i8 {
     let mut best_move = -1;
     let mut alpha = -10000000;
     let beta = 10000000;
-    println!("starting bitboards"); print_bitboards(bitboard); println!("--");
+    // println!("starting bitboards"); print_bitboards(bitboard); println!("--");
 
     for lm in list_moves(&height) {
-        let score = alpha_beta(player*-1, depth-1, lm, 0, alpha, beta, height, bitboard, moves, 0);
+        let score = alpha_beta(lm, alpha, beta, height, bitboard, moves, 0);
         if score > alpha {
             alpha = score;
             best_move = lm;
@@ -47,27 +43,27 @@ fn start_alpha_beta(player: i8, depth: i8, height: &mut Vec<i32>, bitboard: &mut
 }
 
 
-fn alpha_beta(player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>, mut counter: usize) -> i32 {
+fn alpha_beta(m: i8, mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>, mut counter: usize) -> i32 {
     make_move(m as usize, height, bitboard, moves, counter);
-    let mut score = calc_score(bitboard, counter);
     counter += 1;
-    if score == 1000 {
-        if player == -1 {
+    if calc_win(bitboard, counter) {
+        if (counter & 1) == 1 {
             undo_move(height, bitboard, moves, counter);
-            return score;
+            return 1000;
         } else {
             undo_move(height, bitboard, moves, counter);
-            return (score - (100 - depth as i32)) * -1;
+            return -1 * (1000 - counter as i32);
         }
     }
-    score = (score * player as i32 * -1) + old_score;
-    if depth == 0 {
+    if counter == 12 {
         undo_move(height, bitboard, moves, counter);
+        let s = [0, 1, 2, 3, 4, 5, 6, 7];
+        let score = *s.choose(&mut rand::thread_rng()).unwrap();
         return score;
     }
     for lm in list_moves(&height) {
-        let new_score = alpha_beta(player*-1, depth-1, lm, score, alpha, beta, height, bitboard, moves, counter);
-        if player == 1 {
+        let new_score = alpha_beta(lm, alpha, beta, height, bitboard, moves, counter);
+        if (counter & 1) == 0 {
             if new_score > alpha {
                 alpha = new_score;
                 if alpha >= beta || alpha == 1000 {
@@ -75,10 +71,10 @@ fn alpha_beta(player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut 
                     return alpha;
                 }
             }
-        }else {
+        } else {
             if new_score < beta {
                 beta = new_score;
-                if alpha >= beta || beta < -800 {
+                if alpha >= beta || beta < -900 {
                     undo_move(height, bitboard, moves, counter);
                     return beta;
                 }
@@ -86,7 +82,7 @@ fn alpha_beta(player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut 
         }
     }
     undo_move(height, bitboard, moves, counter);
-    if player == 1 {
+    if (counter & 1) == 0 {
         return alpha;
     } else {
         return beta;
@@ -94,23 +90,18 @@ fn alpha_beta(player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut 
 }
 
 
-fn calc_score(bitboard: &Vec<i64>, counter: usize) -> i32 {
-    let s = [0, 1, 2, 3, 4, 5, 6, 7];
-    let mut score = *s.choose(&mut rand::thread_rng()).unwrap();
-    
-    if counter & 1 == 0 {
+fn calc_win(bitboard: &Vec<i64>, counter: usize) -> bool {
+    if (counter & 1) == 1 {
         if is_win(bitboard[0]) {
-            score = 1000;
+            return true;
         }
     } else {
         if is_win(bitboard[1]) {
-            score = 1000;
+            return true;
         }
     }
-    
-    score
+    false
 }
-
 
 
 fn list_moves(height: &Vec<i32>) -> Vec<i8> {
@@ -569,5 +560,83 @@ mod tests {
         assert_eq!(height, vec![0, 7, 14, 21, 28, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
+    }
+
+
+    #[test]
+    fn test_is_win_1() {
+        let mut board = new_board();
+        board[5] = vec![0,  0, 0, 1,  1, 1,  1];
+        let mut bitboards = Vec::new();
+        let mut height = get_height();
+        make_bitboards(&mut board, &mut bitboards, &mut height);
+        assert!(is_win(bitboards[0]));
+        assert!(!is_win(bitboards[1]));
+    }
+
+
+    #[test]
+    fn test_is_win_2() {
+        let mut board = new_board();
+        board[2] = vec![0,  0, 0, -1,  1,  1, -1];
+        board[3] = vec![0,  0, 0,  1,  1, -1,  1];
+        board[4] = vec![0,  0, 0,  1, -1,  1,  1];
+        board[5] = vec![0,  0, 0, -1,  1,  1,  1];
+        let mut bitboards = Vec::new();
+        let mut height = get_height();
+        make_bitboards(&mut board, &mut bitboards, &mut height);
+        assert!(!is_win(bitboards[0]));
+        assert!(is_win(bitboards[1]));
+    }
+
+
+    #[test]
+    fn test_is_win_3() {
+        let mut board = new_board();
+        board[2] = vec![0,  0, 0,  1,  1, -1,  1];
+        board[3] = vec![0,  0, 0, -1,  1, -1, -1];
+        board[4] = vec![0,  0, 0,  1, -1,  1,  1];
+        board[5] = vec![0,  0, 0, -1,  1, -1,  1];
+        let mut bitboards = Vec::new();
+        let mut height = get_height();
+        make_bitboards(&mut board, &mut bitboards, &mut height);
+        assert!(is_win(bitboards[0]));
+        assert!(!is_win(bitboards[1]));
+    }
+
+
+    #[test]
+    fn test_is_win_4() {
+        let mut board = new_board();
+        board[2] = vec![0, 0, 0,  1,  1, -1,  1];
+        board[3] = vec![0, 0, 0, -1,  1, -1, -1];
+        board[4] = vec![0, 0, 0,  1, -1, -1,  1];
+        board[5] = vec![0, 0, 0, -1,  1, -1,  1];
+        let mut bitboards = Vec::new();
+        let mut height = get_height();
+        make_bitboards(&mut board, &mut bitboards, &mut height);
+        assert!(!is_win(bitboards[0]));
+        assert!(is_win(bitboards[1]));
+    }
+
+
+    #[test]
+    fn test_alpha_beta_1() {
+        let mut board = new_board();
+        board[4] = vec![0, 0, 0,  0,  0,  0, 0];
+        board[5] = vec![1, 1, 0, -1, -1, -1, 0];
+        let mut bitboards = Vec::new();
+        let mut height = get_height();    
+        make_bitboards(&mut board, &mut bitboards, &mut height);
+        let mut moves: Vec<i32> = Vec::with_capacity(42);
+        for _ in 0..42 {
+            moves.push(0)
+        }
+        for i in 0..7 {    
+            let alpha = -10000000;
+            let beta = 10000000;
+            let score = alpha_beta(i, alpha, beta, &mut height, &mut bitboards, &mut moves, 0);
+            assert!(score < -900);
+        }
     }
 }

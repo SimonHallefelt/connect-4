@@ -4,7 +4,7 @@ This is a rust project that implements a connect 4 board and a variety of differ
 ## How to run
 1. Install rust.
 2. Install the project.
-3. Use the command "cargo run" in a terminal.
+3. Use the command "cargo run --release" in a terminal.
 
 ## Players
 What are the different players.
@@ -18,5 +18,5 @@ Human is a player that you the user controls what move will be played.
 ### Bot
 Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move.
 
-### Advanced Bot
+### Bit Bot
 Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move. Implemented using bit-boards.

@@ -1,15 +1,17 @@
 
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8 {
-    let depth = 9;
+    let depth = 10;
+    let m;
     if player == 1 {
-        let m = start_alpha_beta(board, player, depth);
-        return m;
+        m = start_alpha_beta(board, player, depth);
     }else {
         let new_board = flip(board);
-        let m = start_alpha_beta(&new_board, player*-1, depth);
+        m = start_alpha_beta(&new_board, player*-1, depth);
         return m;
     }
+    println!("move: {}", m);
+    return m;
 }
 
 fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
@@ -19,7 +21,7 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
 
     for lm in get_legal_moves(board) {
         let score = alpha_beta(board, player*-1, depth-1, lm, 0, alpha, beta);
-        println!("move: {} score: {} alpha {}", lm, score, alpha);
+        // println!("move: {} score: {} alpha {}", lm, score, alpha);
         if score > alpha {
             alpha = score;
             best_move = lm;
@@ -29,8 +31,6 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
         }
     }
 
-    println!("best move: {}", best_move);
-    println!();
     best_move
 }
 
