@@ -49,7 +49,7 @@ pub fn select_player(player: i8) -> Player {
 }
 
 
-pub fn select_player_in_code(player: i8, player_type: i8) -> Player {
+pub fn _select_player_in_code(player: i8, player_type: i8) -> Player {
     Player::new(player, player_type)
 }
 
