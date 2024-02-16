@@ -73,12 +73,14 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use std::result;
+
     use super::*;
 
     #[test]
     fn test_run_random() {
-        let p1 = player::select_player_in_code(1, 0);
-        let p2 = player::select_player_in_code(-1, 0);
+        let p1 = player::_select_player_in_code(1, 0);
+        let p2 = player::_select_player_in_code(-1, 0);
         let result = run(p1, p2);
         assert_ne!(result.0, 0);
         assert_ne!(result.0.abs(), 2);
@@ -93,8 +95,8 @@ mod tests {
         let mut p2_wins = 0;
         let mut draws = 0;
         for _ in 0..10000 {
-            let p1 = player::select_player_in_code(1, 0);
-            let p2 = player::select_player_in_code(-1, 0);
+            let p1 = player::_select_player_in_code(1, 0);
+            let p2 = player::_select_player_in_code(-1, 0);
             let result = run(p1, p2);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -114,14 +116,16 @@ mod tests {
     }
 
     #[test]
-    fn _test_run_2_vs_2_20() {
+    fn _test_run_2_vs_2() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
-        for _ in 0..20 {
-            let p1 = player::select_player_in_code(1, 2);
-            let p2 = player::select_player_in_code(-1, 2);
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 2);
+            let p2 = player::_select_player_in_code(-1, 2);
             let result = run(p1, p2);
+            println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             assert!(result.1 < 5000);
@@ -135,19 +139,21 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        // assert!(p1_wins > ((20-draws) *4) /10);
-        // assert!(p2_wins > ((20-draws) *4) /10);
+        assert!(p1_wins > ((cycles-draws) *4) /10);
+        assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
     #[test]
-    fn _test_run_3_vs_3_20() {       // 8-10-2
+    fn _test_run_3_vs_3() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
-        for _ in 0..20 {
-            let p1 = player::select_player_in_code(1, 3);
-            let p2 = player::select_player_in_code(-1, 3);
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 3);
+            let p2 = player::_select_player_in_code(-1, 3);
             let result = run(p1, p2);
+            println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             assert!(result.1 < 5000);
@@ -161,19 +167,21 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        // assert!(p1_wins > ((20-draws) *4) /10);
-        // assert!(p2_wins > ((20-draws) *4) /10);
+        assert!(p1_wins > ((cycles-draws) *4) /10);
+        assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
     #[test]
-    fn _test_run_2_vs_3_20() {       // 5-14-1
+    fn _test_run_4_vs_4() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
-        for _ in 0..20 {
-            let p1 = player::select_player_in_code(1, 2);
-            let p2 = player::select_player_in_code(-1, 3);
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 4);
+            let p2 = player::_select_player_in_code(-1, 4);
             let result = run(p1, p2);
+            println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             assert!(result.1 < 5000);
@@ -187,20 +195,21 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        // assert!(p1_wins > ((20-draws) *4) /10);
-        // assert!(p2_wins > ((20-draws) *4) /10);
-        // assert!(false);
+        assert!(p1_wins > ((cycles-draws) *4) /10);
+        assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
     #[test]
-    fn _test_run_4_vs_3_20() {       // 0-20
+    fn _test_run_2_vs_3() {       // 
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
-        for _ in 0..20 {
-            let p1 = player::select_player_in_code(1, 4);
-            let p2 = player::select_player_in_code(-1, 3);
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 2);
+            let p2 = player::_select_player_in_code(-1, 3);
             let result = run(p1, p2);
+            println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             assert!(result.1 < 5000);
@@ -214,19 +223,20 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        // assert!(p1_wins > ((20-draws) *4) /10);
-        // assert!(p2_wins > ((20-draws) *4) /10);
+        assert!(false);
     }
 
     #[test]
-    fn _test_run_2_vs_3_30() {       // 17-13-0
+    fn _test_run_2_vs_4() {       // 
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
-        for _ in 0..30 {
-            let p1 = player::select_player_in_code(1, 2);
-            let p2 = player::select_player_in_code(-1, 3);
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 2);
+            let p2 = player::_select_player_in_code(-1, 4);
             let result = run(p1, p2);
+            println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             assert!(result.1 < 5000);
@@ -240,8 +250,33 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        // assert!(p1_wins > ((30-draws) *4) /10);
-        // assert!(p2_wins > ((30-draws) *4) /10);
-        // assert!(false);
+        assert!(false);
+    }
+
+    #[test]
+    fn _test_run_3_vs_4() {       //
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        let cycles = 100;
+        for _ in 0..cycles {
+            let p1 = player::_select_player_in_code(1, 3);
+            let p2 = player::_select_player_in_code(-1, 4);
+            let result = run(p1, p2);
+            println!("results = {:?}", result);
+            assert_ne!(result.0, 0);
+            assert_ne!(result.0.abs(), 2);
+            assert!(result.1 < 5000);
+            assert!(result.2 < 5000);
+            if result.0 == 3 {
+                draws += 1;
+            } else if result.0 == 1 {
+                p1_wins += 1;
+            } else if result.0 == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        assert!(false);
     }
 }
