@@ -1,7 +1,7 @@
 
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8 {
-    let depth = 10;
+    let depth = 10.min(count_zeros(board));
     let m;
     if player == 1 {
         m = start_alpha_beta(board, player, depth);
@@ -21,7 +21,7 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
 
     for lm in get_legal_moves(board) {
         let score = alpha_beta(board, player*-1, depth-1, lm, 0, alpha, beta);
-        // println!("move: {} score: {} alpha {}", lm, score, alpha);
+        println!("move: {} score: {} alpha {}", lm, score, alpha);
         if score > alpha {
             alpha = score;
             best_move = lm;
@@ -192,9 +192,24 @@ fn flip(board: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
 }
 
 
+fn count_zeros(board: &Vec<Vec<i8>>) -> i8 {
+    let mut count = 0;
+    for i in 0..6 {
+        for j in 0..7 {
+            if board[i][j] == 0 {
+                count += 1;
+            }
+        }
+    }
+    count
+}
+
+
 
 #[cfg(test)]
 mod tests {
+    use std::result;
+
     use super::*;
 
     fn new_board() -> Vec<Vec<i8>> {
@@ -288,6 +303,21 @@ mod tests {
         board[4] = vec![0, 0, 0, 0, 0, 0, 0];
         board[5] = vec![0, 1, 1, -1, -1, 0, -1];
         assert_eq!(alpha_beta(&mut board, 1*-1, 1, 2, 0, -100000, 100000), -900);
+    }
+
+    #[test]
+    fn test_draw() {
+        let mut board = new_board();
+        board[0] = vec![ 1,  0, -1,  1, -1,  0,  1];
+        board[1] = vec![ 1,  0,  1, -1,  1,  0,  1];
+        board[2] = vec![ 1, -1, -1,  1, -1, -1,  1];
+        board[3] = vec![-1,  1, -1, -1, -1,  1, -1];
+        board[4] = vec![ 1, -1,  1,  1,  1, -1, -1];
+        board[5] = vec![ 1,  1, -1, -1, -1,  1, -1];
+        let depth = 10.min(count_zeros(&mut board));
+        let result = start_alpha_beta(&mut board, 1, depth);
+        println!("result: {}", result);
+        assert_ne!(result, -1);
     }
 
 }

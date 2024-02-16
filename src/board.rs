@@ -13,26 +13,35 @@ pub fn new_board() -> Vec<Vec<i8>> {
 }
 
 
-pub fn update_board(board: &mut Vec<Vec<i8>>, m: i8, player: i8) {
+/*
+ * -2: player 1 illegal move
+ * -1: player -1 win
+ *  0: continue
+ *  1: player 1 win
+ *  2: player -1 illegal move
+ *  3: draw
+ */
+pub fn update_board(board: &mut Vec<Vec<i8>>, m: i8, player: i8) -> i8 {
     if !legal_move(board, m){
-        println!("Not a legal move '{}'", m);
+        println!("\nNot a legal move '{}'", m);
         println!("The winning player is '{}'", player * -1);
         print_board(board);
-        exit(0);
+        return player * -1 * 2;
     }
     let _r = movee(board, m, player);
     let win = find_win(board);
     if win {
-        println!("The winning player is '{}'", player);
+        println!("\nThe winning player is '{}'", player);
         print_board(board);
-        exit(0);
+        return player;
     }
     let draw  = find_draw(board);
     if draw {
-        println!("The game ended in a draw");
+        println!("\nThe game ended in a draw");
         print_board(board);
-        exit(0);
+        return 3;
     }
+    0
 }
 
 

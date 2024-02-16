@@ -12,14 +12,14 @@ fn starting_player() -> i8 {
     }
 }
 
-fn main() {
+
+fn run(p1: player::Player, p2: player::Player) -> i8 {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
-    let p1 = player::select_player( 1);
-    let p2 = player::select_player(-1);
     let mut d;
     let mut d1 = 0;
     let mut d2 = 0;
+    let mut ub;
     println!("starting player is {}\n", players_turn);
     loop {
         let m;
@@ -36,15 +36,219 @@ fn main() {
             d2 += d.as_millis();
         }
         println!("Time is: {:?}", d);
-        board::update_board(&mut board, m, players_turn);
+        ub = board::update_board(&mut board, m, players_turn);
         if players_turn == -1 {
             println!();
-            board::print_board(&board);
+            if ub == 0 {board::print_board(&board)}
             println!("player total time (seconds)");
             println!("Time 1: {:?} Time 2: {:?}", d1 / 1000, d2 / 1000);
             println!();
         }
+        if ub != 0 {
+            break;
+        }
         players_turn *= -1;
     }
+    ub
 }
 
+
+fn select_player() {
+    let p1 = player::select_player( 1);
+    let p2 = player::select_player(-1);
+    run(p1, p2);
+}
+
+
+fn main() {
+    select_player();
+}
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_random() {
+        let p1 = player::select_player_in_code(1, 0);
+        let p2 = player::select_player_in_code(-1, 0);
+        let results = run(p1, p2);
+        assert_ne!(results, 0);
+        assert_ne!(results.abs(), 2);
+    }
+
+
+    #[test]
+    fn test_run_random_vs_random_10000() {
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..10000 {
+            let p1 = player::select_player_in_code(1, 0);
+            let p2 = player::select_player_in_code(-1, 0);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        assert!(p1_wins > ((10000-draws) *4) /10);
+        assert!(p2_wins > ((10000-draws) *4) /10);
+    }
+
+    // #[test]
+    fn test_run_2_vs_2_20() {
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..20 {
+            let p1 = player::select_player_in_code(1, 2);
+            let p2 = player::select_player_in_code(-1, 2);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((20-draws) *4) /10);
+        // assert!(p2_wins > ((20-draws) *4) /10);
+    }
+
+    //#[test]
+    fn test_run_3_vs_3_20() {       // 8-10-2
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..20 {
+            let p1 = player::select_player_in_code(1, 3);
+            let p2 = player::select_player_in_code(-1, 3);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((20-draws) *4) /10);
+        // assert!(p2_wins > ((20-draws) *4) /10);
+    }
+
+    // #[test]
+    fn test_run_2_vs_3_20() {       // 5-14-1
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..20 {
+            let p1 = player::select_player_in_code(1, 2);
+            let p2 = player::select_player_in_code(-1, 3);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((20-draws) *4) /10);
+        // assert!(p2_wins > ((20-draws) *4) /10);
+        assert!(false);
+    }
+
+    // #[test]
+    fn test_run_4_vs_3_20() {       // 0-20
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..20 {
+            let p1 = player::select_player_in_code(1, 4);
+            let p2 = player::select_player_in_code(-1, 3);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((20-draws) *4) /10);
+        // assert!(p2_wins > ((20-draws) *4) /10);
+    }
+
+    // #[test]
+    fn test_run_5_vs_3_30() {       // 21-7-2
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..30 {
+            let p1 = player::select_player_in_code(1, 5);
+            let p2 = player::select_player_in_code(-1, 3);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((30-draws) *4) /10);
+        // assert!(p2_wins > ((30-draws) *4) /10);
+        assert!(false);
+    }
+
+    // #[test]
+    fn test_run_5_vs_2_30() {       // 
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        for _ in 0..30 {
+            let p1 = player::select_player_in_code(1, 5);
+            let p2 = player::select_player_in_code(-1, 2);
+            let result = run(p1, p2);
+            assert_ne!(result, 0);
+            assert_ne!(result.abs(), 2);
+            if result == 3 {
+                draws += 1;
+            } else if result == 1 {
+                p1_wins += 1;
+            } else if result == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        // assert!(p1_wins > ((20-draws) *4) /10);
+        // assert!(p2_wins > ((20-draws) *4) /10);
+        assert!(false);
+    }
+}

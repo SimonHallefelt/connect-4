@@ -1,4 +1,4 @@
-use std::vec;
+use std::{collections::HashMap, vec};
 use rand::{seq::SliceRandom, Rng};
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
@@ -27,25 +27,36 @@ fn start_alpha_beta(height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut 
     let mut best_move = -1;
     let mut alpha = -10000000;
     let beta = 10000000;
+    let mut hm = HashMap::new();
     // println!("starting bitboards"); print_bitboards(bitboard); println!("--");
+    let mut s = alpha;
 
     for lm in list_moves(&height) {
-        let score = alpha_beta(lm, alpha, beta, height, bitboard, moves, 0);
+        make_move(lm as usize, height, bitboard, moves, 0);
+        let mut score = alpha_beta(alpha, beta, height, bitboard, moves, 1, &mut hm);
+        println!("score: {} move: {}", score, lm);
+        if score == 1000 {
+            return lm;
+        }
+        // score += height[lm as usize] - lm as i32 *7;
         if score > alpha {
             alpha = score;
-            best_move = lm;
-        }
-        if alpha == 1000 {
-            break;
+            if s < score + height[lm as usize] - lm as i32 *7 {
+                s = score + height[lm as usize] - lm as i32 *7;
+                best_move = lm;
+            }
         }
     }
     best_move
 }
 
 
-fn alpha_beta(m: i8, mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>, mut counter: usize) -> i32 {
-    make_move(m as usize, height, bitboard, moves, counter);
-    counter += 1;
+fn alpha_beta(mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut Vec<i32>, counter: usize, hm: &mut HashMap<Vec<i64>, i32>) -> i32 {
+    if hm.contains_key(bitboard) {
+        let temp = *hm.get(bitboard).unwrap();
+        undo_move(height, bitboard, moves, counter);
+        return temp;
+    }
     if calc_win(bitboard, counter) {
         if (counter & 1) == 1 {
             undo_move(height, bitboard, moves, counter);
@@ -55,36 +66,43 @@ fn alpha_beta(m: i8, mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitbo
             return -1 * (1000 - counter as i32);
         }
     }
-    if counter == 12 {
+    let list_moves = list_moves(&height);
+    if counter == 14 || list_moves.is_empty() {
         undo_move(height, bitboard, moves, counter);
         let s = [0, 1, 2, 3, 4, 5, 6, 7];
         let score = *s.choose(&mut rand::thread_rng()).unwrap();
         return score;
     }
-    for lm in list_moves(&height) {
-        let new_score = alpha_beta(lm, alpha, beta, height, bitboard, moves, counter);
+    for lm in list_moves {
+        make_move(lm as usize, height, bitboard, moves, counter);
+        let score = alpha_beta(alpha, beta, height, bitboard, moves, counter+1, hm);
         if (counter & 1) == 0 {
-            if new_score > alpha {
-                alpha = new_score;
+            if score > alpha {
+                alpha = score;
                 if alpha >= beta || alpha == 1000 {
+                    hm.insert(bitboard.clone(), alpha);
                     undo_move(height, bitboard, moves, counter);
                     return alpha;
                 }
             }
         } else {
-            if new_score < beta {
-                beta = new_score;
-                if alpha >= beta || beta < -900 {
+            if score < beta {
+                beta = score;
+                if alpha >= beta /* || beta < -900 */ {
+                    hm.insert(bitboard.clone(), beta);
                     undo_move(height, bitboard, moves, counter);
                     return beta;
                 }
             }
         }
     }
-    undo_move(height, bitboard, moves, counter);
     if (counter & 1) == 0 {
+        hm.insert(bitboard.clone(), alpha);
+        undo_move(height, bitboard, moves, counter);
         return alpha;
     } else {
+        hm.insert(bitboard.clone(), beta);
+        undo_move(height, bitboard, moves, counter);
         return beta;
     }
 }
@@ -107,7 +125,8 @@ fn calc_win(bitboard: &Vec<i64>, counter: usize) -> bool {
 fn list_moves(height: &Vec<i32>) -> Vec<i8> {
     let mut legal_moves = Vec::new();
     let top: i64 = 0b1000000_1000000_1000000_1000000_1000000_1000000_1000000;
-    for i in 0..7 {
+    // for i in 0..7 {
+    for i in vec![3,2,4,1,5,0,6] {
         if (top & (1 << height[i])) == 0 {
             legal_moves.push(i as i8);
         }
@@ -632,10 +651,13 @@ mod tests {
         for _ in 0..42 {
             moves.push(0)
         }
+        let mut hm = HashMap::new();
         for i in 0..7 {    
             let alpha = -10000000;
             let beta = 10000000;
-            let score = alpha_beta(i, alpha, beta, &mut height, &mut bitboards, &mut moves, 0);
+            make_move(i, &mut height, &mut bitboards, &mut moves, 0);
+            let score = alpha_beta(alpha, beta, &mut height, &mut bitboards, &mut moves, 1, &mut hm);
+            println!("score: {}", score);
             assert!(score < -900);
         }
     }
