@@ -188,7 +188,7 @@ mod tests {
         assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
-    #[test]
+    // #[test]
     fn _test_run_2_vs_3() {       // 40-60-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;

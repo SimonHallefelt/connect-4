@@ -1,5 +1,4 @@
 use std::{collections::HashMap, vec};
-use rand::seq::SliceRandom;
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
     let mut bitboard: Vec<i64> = Vec::with_capacity(2);
@@ -68,9 +67,6 @@ fn alpha_beta(mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &m
     let list_moves = list_moves(&height);
     if counter == 15 || list_moves.is_empty() {
         undo_move(height, bitboard, moves, counter);
-        // let s = [0, 1, 2, 3, 4, 5, 6, 7];
-        // let score = *s.choose(&mut rand::thread_rng()).unwrap();
-        // return score;
         return 0;
     }
     for lm in list_moves {
