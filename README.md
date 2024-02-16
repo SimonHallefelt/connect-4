@@ -19,7 +19,7 @@ Human is a player that you the user controls what move will be played.
 Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move.
 
 ### Bit Bot
-Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move. Implemented using bit-boards.
+Bit Bot is a player that uses alpha-beta pruning and a heretic evaluation to decide it's next move. Implemented using bit-boards.
 
 ### Bit Bot 2
 Same as bit bot but implemented with a loop and preforms much worse.
