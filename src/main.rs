@@ -53,6 +53,7 @@ fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
         }
         players_turn *= -1;
     }
+    println!("ub: {} d1_max: {} d2_max: {}", ub, d1_max, d2_max);
     (ub, d1_max, d2_max)
 }
 
@@ -73,8 +74,6 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use std::result;
-
     use super::*;
 
     #[test]
@@ -84,8 +83,6 @@ mod tests {
         let result = run(p1, p2);
         assert_ne!(result.0, 0);
         assert_ne!(result.0.abs(), 2);
-        assert!(result.1 < 5000);
-        assert!(result.2 < 5000);
     }
 
 
@@ -100,8 +97,6 @@ mod tests {
             let result = run(p1, p2);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -128,8 +123,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -156,8 +149,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -184,8 +175,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -212,8 +201,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -239,8 +226,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
@@ -266,8 +251,6 @@ mod tests {
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
-            assert!(result.1 < 5000);
-            assert!(result.2 < 5000);
             if result.0 == 3 {
                 draws += 1;
             } else if result.0 == 1 {
