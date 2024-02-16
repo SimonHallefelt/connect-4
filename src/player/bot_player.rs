@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8 {
-    let depth = 10.min(count_zeros(board));
+    let depth = 11.min(count_zeros(board));
     let m;
     if player == 1 {
         m = start_alpha_beta(board, player, depth);
@@ -18,9 +20,10 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
     let mut best_move = -1;
     let mut alpha = -10000000;
     let beta = 10000000;
+    let mut hm = HashMap::new();
 
     for lm in get_legal_moves(board) {
-        let score = alpha_beta(board, player*-1, depth-1, lm, 0, alpha, beta);
+        let score = alpha_beta(board, player*-1, depth-1, lm, 0, alpha, beta, &mut hm);
         println!("move: {} score: {} alpha {}", lm, score, alpha);
         if score > alpha {
             alpha = score;
@@ -35,10 +38,14 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
 }
 
 
-fn alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut beta: i32) -> i32 {
+fn alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8, m: i8, old_score: i32, mut alpha: i32, mut beta: i32, hm: &mut HashMap<Vec<Vec<i8>>, i32>) -> i32 {
     let mut new_board = board.clone();
     let mut score = calc_score(&mut new_board, player*-1, m);
 
+    if hm.contains_key(&new_board) {
+        let temp = *hm.get(&new_board).unwrap();
+        return temp;
+    }
     if score == 1000 {
         if player == -1 {
             return score;
@@ -53,11 +60,12 @@ fn alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8, m: i8, old_score: i32
     
     //println!("board: {:?}", new_board);
     for lm in get_legal_moves(&new_board) {
-        let new_score = alpha_beta(&new_board, player*-1, depth-1, lm, score, alpha, beta);
+        let new_score = alpha_beta(&new_board, player*-1, depth-1, lm, score, alpha, beta, hm);
         if player == 1 {
             if new_score > alpha {
                 alpha = new_score;
                 if alpha >= beta || alpha == 1000 {
+                    hm.insert(new_board.clone(), alpha);
                     return alpha;
                 }
             }
@@ -65,6 +73,7 @@ fn alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8, m: i8, old_score: i32
             if new_score < beta {
                 beta = new_score;
                 if alpha >= beta {
+                    hm.insert(new_board.clone(), beta);
                     return beta;
                 }
             }
@@ -72,8 +81,10 @@ fn alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8, m: i8, old_score: i32
     }
 
     if player == 1 {
+        hm.insert(new_board.clone(), alpha);
         return alpha;
     } else {
+        hm.insert(new_board.clone(), beta);
         return beta;
     }
 }
@@ -280,21 +291,23 @@ mod tests {
     #[test]
     fn test_alpha_beta_1() {
         let mut board = new_board();
-        board[2] = vec![0, 0, 0, 0, 0, 0, 0];
-        board[3] = vec![0, 0, 0, -1, 0, 0, 0];
-        board[4] = vec![0, 1, 1, 1, 0, 0, 0];
+        board[2] = vec![0,  0, 0,  0, 0, 0, 0];
+        board[3] = vec![0,  0, 0, -1, 0, 0, 0];
+        board[4] = vec![0,  1, 1,  1, 0, 0, 0];
         board[5] = vec![1, -1, 1, -1, 0, 0, 0];
-        assert_eq!(alpha_beta(&mut board, 1*-1, 5, 2, 0, -100000, 100000), 1000);
+        let mut hm = HashMap::new();
+        assert_eq!(alpha_beta(&mut board, 1*-1, 5, 2, 0, -100000, 100000, &mut hm), 1000);
     }
 
     #[test]
     fn test_alpha_beta_2() {
         let mut board = new_board();
-        board[2] = vec![0, 0, 0, 0, 0, 0, 0];
-        board[3] = vec![0, 0, 1, -1, 0, 0, 0];
-        board[4] = vec![0, 1, 1, 1, 0, 0, 0];
+        board[2] = vec![0,  0, 0,  0, 0, 0, 0];
+        board[3] = vec![0,  0, 1, -1, 0, 0, 0];
+        board[4] = vec![0,  1, 1,  1, 0, 0, 0];
         board[5] = vec![1, -1, 1, -1, 0, 0, 0];
-        assert_eq!(alpha_beta(&mut board, -1*-1, 5, 6, 0, -100000, 100000), 1000);
+        let mut hm = HashMap::new();
+        assert_eq!(alpha_beta(&mut board, -1*-1, 5, 6, 0, -100000, 100000, &mut hm), 1000);
     }
 
     #[test]
@@ -302,7 +315,8 @@ mod tests {
         let mut board = new_board();
         board[4] = vec![0, 0, 0, 0, 0, 0, 0];
         board[5] = vec![0, 1, 1, -1, -1, 0, -1];
-        assert_eq!(alpha_beta(&mut board, 1*-1, 1, 2, 0, -100000, 100000), -900);
+        let mut hm = HashMap::new();
+        assert_eq!(alpha_beta(&mut board, 1*-1, 1, 2, 0, -100000, 100000, &mut hm), -900);
     }
 
     #[test]

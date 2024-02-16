@@ -1,5 +1,5 @@
 use std::{collections::HashMap, vec};
-use rand::{seq::SliceRandom, Rng};
+use rand::seq::SliceRandom;
 
 pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
     let mut bitboard: Vec<i64> = Vec::with_capacity(2);
@@ -33,12 +33,11 @@ fn start_alpha_beta(height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut 
 
     for lm in list_moves(&height) {
         make_move(lm as usize, height, bitboard, moves, 0);
-        let mut score = alpha_beta(alpha, beta, height, bitboard, moves, 1, &mut hm);
+        let score = alpha_beta(alpha, beta, height, bitboard, moves, 1, &mut hm);
         println!("score: {} move: {}", score, lm);
         if score == 1000 {
             return lm;
         }
-        // score += height[lm as usize] - lm as i32 *7;
         if score > alpha {
             alpha = score;
             if s < score + height[lm as usize] - lm as i32 *7 {
@@ -125,7 +124,6 @@ fn calc_win(bitboard: &Vec<i64>, counter: usize) -> bool {
 fn list_moves(height: &Vec<i32>) -> Vec<i8> {
     let mut legal_moves = Vec::new();
     let top: i64 = 0b1000000_1000000_1000000_1000000_1000000_1000000_1000000;
-    // for i in 0..7 {
     for i in vec![3,2,4,1,5,0,6] {
         if (top & (1 << height[i])) == 0 {
             legal_moves.push(i as i8);
