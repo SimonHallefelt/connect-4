@@ -9,7 +9,7 @@ pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8{
     }
     let mut height: Vec<i32> = vec![0, 7, 14, 21, 28, 35, 42];
 
-    // print_board(board);
+    // _print_board(board);
     if player == 1 {
         make_bitboards(board, &mut bitboard, &mut height);
     }else {
@@ -28,13 +28,13 @@ fn start_alpha_beta(height: &mut Vec<i32>, bitboard: &mut Vec<i64>, moves: &mut 
     let mut alpha = -10000000;
     let beta = 10000000;
     let mut hm = HashMap::new();
-    // println!("starting bitboards"); print_bitboards(bitboard); println!("--");
+    // println!("starting bitboards"); _print_bitboards(bitboard); println!("--");
     let mut s = alpha;
 
     for lm in list_moves(&height) {
         make_move(lm as usize, height, bitboard, moves, 0);
         let score = alpha_beta(alpha, beta, height, bitboard, moves, 1, &mut hm);
-        println!("score: {} move: {}", score, lm);
+        // println!("score: {} move: {}", score, lm);
         if score == 1000 {
             return lm;
         }
@@ -66,11 +66,12 @@ fn alpha_beta(mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &m
         }
     }
     let list_moves = list_moves(&height);
-    if counter == 14 || list_moves.is_empty() {
+    if counter == 15 || list_moves.is_empty() {
         undo_move(height, bitboard, moves, counter);
-        let s = [0, 1, 2, 3, 4, 5, 6, 7];
-        let score = *s.choose(&mut rand::thread_rng()).unwrap();
-        return score;
+        // let s = [0, 1, 2, 3, 4, 5, 6, 7];
+        // let score = *s.choose(&mut rand::thread_rng()).unwrap();
+        // return score;
+        return 0;
     }
     for lm in list_moves {
         make_move(lm as usize, height, bitboard, moves, counter);
@@ -198,7 +199,7 @@ fn flip(board: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
 }
 
 
-fn print_bitboards(bitboard: &Vec<i64>) {
+fn _print_bitboards(bitboard: &Vec<i64>) {
     for i in 0..2 {
         let mask = 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001;
         for j in (0..6).rev() {     // 0..7 for full board
@@ -216,7 +217,7 @@ fn print_bitboards(bitboard: &Vec<i64>) {
 }
 
 
-fn print_board(board: &Vec<Vec<i8>>) {
+fn _print_board(board: &Vec<Vec<i8>>) {
     println!("board:");
     for b in board {
         print!("[");
@@ -272,12 +273,12 @@ mod tests {
         let mut bitboards = vec![0,0];
         let mut height = get_height();
         make_initial_move(0, &mut height, &mut bitboards, 0);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 28, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
         make_initial_move(4, &mut height, &mut bitboards, 1);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 29, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000001_0000000_0000000_0000000_0000000);
@@ -291,13 +292,13 @@ mod tests {
         make_initial_move(0, &mut height, &mut bitboards, 0);
         make_initial_move(3, &mut height, &mut bitboards, 1);
         make_initial_move(0, &mut height, &mut bitboards, 0);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![2, 7, 14, 22, 28, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000011);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000001_0000000_0000000_0000000);
         make_initial_move(4, &mut height, &mut bitboards, 1);
         make_initial_move(4, &mut height, &mut bitboards, 0);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![2, 7, 14, 22, 30, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000010_0000000_0000000_0000000_0000011);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000001_0000001_0000000_0000000_0000000);
@@ -311,7 +312,7 @@ mod tests {
         let mut bitboards = Vec::new();
         let mut height = get_height();
         make_bitboards(&mut board, &mut bitboards, &mut height);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 8, 15, 21, 29, 36, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000000_0000001_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000001_0000000_0000000_0000001_0000000_0000000);
@@ -326,7 +327,7 @@ mod tests {
         let mut bitboards = Vec::new();
         let mut height = get_height();
         make_bitboards(&mut board, &mut bitboards, &mut height);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 9, 16, 21, 30, 36, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000010_0000001_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000001_0000010_0000000_0000001_0000010_0000000);
@@ -343,13 +344,13 @@ mod tests {
         make_bitboards(&mut board, &mut bitboards, &mut height);
         make_move(0, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 28, 35, 42]);
         assert_eq!(moves[0..1], vec![0]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
         make_move(5, &mut height, &mut bitboards, &mut moves, counter);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 28, 36, 42]);
         assert_eq!(moves[0..2], vec![0, 5]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001);
@@ -371,7 +372,7 @@ mod tests {
         counter += 1;
         make_move(4, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 29, 36, 42]);
         assert_eq!(moves[0..3], vec![0, 5, 4]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000000_0000000_0000001);
@@ -379,7 +380,7 @@ mod tests {
         make_move(4, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
         make_move(5, &mut height, &mut bitboards, &mut moves, counter);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 30, 37, 42]);
         assert_eq!(moves[0..5], vec![0, 5, 4, 4, 5]);
         assert_eq!(bitboards[0], 0b0000000_0000010_0000001_0000000_0000000_0000000_0000001);
@@ -397,13 +398,13 @@ mod tests {
         let mut counter = moves.len();
         make_bitboards(&mut board, &mut bitboards, &mut height);
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 7, 15, 21, 29, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000001_0000000_0000000);
         
         undo_move(&mut height, &mut bitboards, &mut moves, counter);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 7, 14, 21, 29, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
@@ -420,10 +421,10 @@ mod tests {
         let mut moves = vec![4, 5, 4, 2, 2, 3, 1, 1];
         let mut counter = moves.len();
         make_bitboards(&mut board, &mut bitboards, &mut height);
-        print_bitboards(&bitboards); println!("---");
+        _print_bitboards(&bitboards); println!("---");
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
-        print_bitboards(&bitboards); println!("---");
+        _print_bitboards(&bitboards); println!("---");
         assert_eq!(height, vec![0, 7, 16, 22, 30, 36, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000011_0000000_0000010_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000001_0000000_0000001_0000001_0000000_0000000);
@@ -431,7 +432,7 @@ mod tests {
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
         undo_move(&mut height, &mut bitboards, &mut moves, counter);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 7, 14, 21, 29, 36, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000001_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000001_0000000_0000000_0000000_0000000_0000000);
@@ -449,15 +450,15 @@ mod tests {
         let mut moves = vec![6,6,6];
         let mut counter = moves.len();
         make_bitboards(&mut board, &mut bitboards, &mut height);
-        print_bitboards(&bitboards); println!("---");
+        _print_bitboards(&bitboards); println!("---");
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
-        print_bitboards(&bitboards); println!("---");
+        _print_bitboards(&bitboards); println!("---");
         assert_eq!(height, vec![0, 7, 14, 21, 28, 35, 44]);
         assert_eq!(bitboards[0], 0b0000001_0000000_0000000_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000010_0000000_0000000_0000000_0000000_0000000_0000000);
         undo_move(&mut height, &mut bitboards, &mut moves, counter); counter -= 1;
         undo_move(&mut height, &mut bitboards, &mut moves, counter);
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 7, 14, 21, 28, 35, 42]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
         assert_eq!(bitboards[1], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000000);
@@ -476,7 +477,7 @@ mod tests {
         counter += 1;
         make_move(5, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 28, 36, 42]);
         assert_eq!(moves[0..2], vec![0, 5]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0000000_0000000_0000000_0000000_0000001);
@@ -507,7 +508,7 @@ mod tests {
         counter += 1;
         make_move(5, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 30, 37, 42]);
         assert_eq!(moves[0..5], vec![0, 5, 4, 4, 5]);
         assert_eq!(bitboards[0], 0b0000000_0000010_0000001_0000000_0000000_0000000_0000001);
@@ -541,7 +542,7 @@ mod tests {
         counter += 1;
         make_move(5, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![1, 7, 14, 21, 30, 37, 42]);
         assert_eq!(moves[0..5], vec![0, 5, 4, 4, 5]);
         assert_eq!(bitboards[0], 0b0000000_0000010_0000001_0000000_0000000_0000000_0000001);
@@ -564,7 +565,7 @@ mod tests {
         counter += 1;
         make_move(4, &mut height, &mut bitboards, &mut moves, counter);
         counter += 1;
-        print_bitboards(&bitboards);
+        _print_bitboards(&bitboards);
         assert_eq!(height, vec![0, 7, 14, 21, 33, 35, 42]);
         assert_eq!(moves[0..5], vec![4, 4, 4, 4, 4]);
         assert_eq!(bitboards[0], 0b0000000_0000000_0010101_0000000_0000000_0000000_0000000);

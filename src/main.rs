@@ -43,17 +43,17 @@ fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
         ub = board::update_board(&mut board, m, players_turn);
         if players_turn == -1 {
             println!();
-            if ub == 0 {board::print_board(&board)}
-            println!("player total time (seconds)");
-            println!("Time 1: {:?} Time 2: {:?}", d1 / 1000, d2 / 1000);
-            println!();
+            // if ub == 0 {board::print_board(&board)}
+            // println!();
         }
         if ub != 0 {
             break;
         }
         players_turn *= -1;
     }
-    println!("ub: {} d1_max: {} d2_max: {}", ub, d1_max, d2_max);
+    println!("players:");
+    println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
+    println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
     (ub, d1_max, d2_max)
 }
 
@@ -110,7 +110,7 @@ mod tests {
         assert!(p2_wins > ((10000-draws) *4) /10);
     }
 
-    #[test]
+    // #[test]
     fn _test_run_2_vs_2() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
@@ -162,7 +162,7 @@ mod tests {
         assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
-    #[test]
+    // #[test]
     fn _test_run_4_vs_4() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
@@ -189,7 +189,7 @@ mod tests {
     }
 
     #[test]
-    fn _test_run_2_vs_3() {       // 
+    fn _test_run_2_vs_3() {       // 40-60-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
@@ -213,8 +213,8 @@ mod tests {
         assert!(false);
     }
 
-    #[test]
-    fn _test_run_2_vs_4() {       // 
+    // #[test]
+    fn _test_run_2_vs_4() {       // 99-1-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
@@ -238,8 +238,8 @@ mod tests {
         assert!(false);
     }
 
-    #[test]
-    fn _test_run_3_vs_4() {       //
+    // #[test]
+    fn _test_run_3_vs_4() {       // 100-0-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;

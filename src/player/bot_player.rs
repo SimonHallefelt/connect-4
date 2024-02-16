@@ -24,7 +24,7 @@ fn start_alpha_beta(board: &Vec<Vec<i8>>, player: i8, depth: i8) -> i8 {
 
     for lm in get_legal_moves(board) {
         let score = alpha_beta(board, player*-1, depth-1, lm, 0, alpha, beta, &mut hm);
-        println!("move: {} score: {} alpha {}", lm, score, alpha);
+        // println!("move: {} score: {} alpha {}", lm, score, alpha);
         if score > alpha {
             alpha = score;
             best_move = lm;
@@ -219,8 +219,6 @@ fn count_zeros(board: &Vec<Vec<i8>>) -> i8 {
 
 #[cfg(test)]
 mod tests {
-    use std::result;
-
     use super::*;
 
     fn new_board() -> Vec<Vec<i8>> {
