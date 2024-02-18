@@ -1,0 +1,51 @@
+import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    in-out property<int> counter: 42;
+    in-out property <int> player: 1;
+    in-out property <int> player_type: 0;
+    callback request-increase-value();
+    VerticalBox {
+        Text {
+            text: "counter: \{root.counter}, player: \{root.player}, player type: \{root.player_type}";
+        }
+        Button {
+            text: "Increase counter";
+            clicked => {
+                root.request-increase-value();
+            }
+        }
+        HorizontalBox {
+            Button {
+                text: "Random";
+                clicked => {
+                    root.player_type = 0;
+                }
+            }
+            Button {
+                text: "Human";
+                clicked => {
+                    root.player_type = 1;
+                }
+            }
+            Button {
+                text: "Bot";
+                clicked => {
+                    root.player_type = 2;
+                }
+            }
+            Button {
+                text: "Bit Bot";
+                clicked => {
+                    root.player_type = 3;
+                }
+            }
+            Button {
+                text: "Bit Bot 2";
+                clicked => {
+                    root.player_type = 4;
+                }
+            }
+        }
+    }
+}

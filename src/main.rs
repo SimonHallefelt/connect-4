@@ -3,6 +3,7 @@ use std::time::Instant;
 
 mod board;
 mod player;
+mod gui;
 
 fn starting_player() -> i8 {
     let mut rng = rand::thread_rng();
@@ -58,7 +59,7 @@ fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
 }
 
 
-fn select_player() {
+fn setup_game() {
     let p1 = player::select_player( 1);
     let p2 = player::select_player(-1);
     run(p1, p2);
@@ -66,7 +67,9 @@ fn select_player() {
 
 
 fn main() {
-    select_player();
+    setup_game();
+    // let gui = gui::example_gui();
+    println!("gui: {:?}", gui);
 }
 
 
