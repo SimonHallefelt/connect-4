@@ -4,6 +4,7 @@ mod bot_player;
 mod bit_bot_player;
 mod bit_bot_2_player;
 
+#[derive(Debug, Clone)]
 pub struct Player {
     player: i8,
     player_type: i8

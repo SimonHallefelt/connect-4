@@ -1,51 +1,69 @@
 import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
-    in-out property<int> counter: 42;
-    in-out property <int> player: 1;
+    in-out property <int> player: 0;
     in-out property <int> player_type: 0;
-    callback request-increase-value();
+    in-out property <int> player_1_type: 0;
+    in-out property <int> player_2_type: 0;
+    callback set_player_type();
+    callback request_run_game();
     VerticalBox {
         Text {
-            text: "counter: \{root.counter}, player: \{root.player}, player type: \{root.player_type}";
+            text: 
+                "player: 1, player type: \{root.player_1_type} \n" + 
+                "player: 2, player type: \{root.player_2_type}";
         }
-        Button {
-            text: "Increase counter";
-            clicked => {
-                root.request-increase-value();
-            }
+        Text {
+            text: "Select player \{root.player+1} type:";
         }
         HorizontalBox {
             Button {
                 text: "Random";
                 clicked => {
                     root.player_type = 0;
+                    root.player = Math.mod(root.player + 1, 2);
+                    root.set_player_type();
                 }
             }
             Button {
                 text: "Human";
                 clicked => {
                     root.player_type = 1;
+                    root.player = Math.mod(root.player + 1, 2);
+                    root.set_player_type();
                 }
             }
             Button {
                 text: "Bot";
                 clicked => {
                     root.player_type = 2;
+                    root.player = Math.mod(root.player + 1, 2);
+                    root.set_player_type();
                 }
             }
             Button {
                 text: "Bit Bot";
                 clicked => {
                     root.player_type = 3;
+                    root.player = Math.mod(root.player + 1, 2);
+                    root.set_player_type();
                 }
             }
             Button {
                 text: "Bit Bot 2";
                 clicked => {
                     root.player_type = 4;
+                    root.player = Math.mod(root.player + 1, 2);
+                    root.set_player_type();
                 }
+            }
+        }
+        Button {
+            text: "start game";
+            clicked => {
+                root.request_run_game();
             }
         }
     }
 }
+
