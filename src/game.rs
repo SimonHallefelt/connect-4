@@ -1,8 +1,13 @@
+
+
 use std::time::Instant;
 use rand::Rng;
+use slint::ComponentHandle;
 
 use crate::player;
 use crate::board;
+use crate::ui;
+use crate::ui::AppWindow;
 
 
 pub struct Game {
@@ -40,8 +45,9 @@ impl Game {
         }
     }
 
-    pub fn game_run(&self) {
-        run(self.p1.clone(), self.p2.clone());
+    pub fn game_run(&self, _ui: slint::Weak<AppWindow>) {
+        let ui_2: AppWindow = _ui.unwrap();
+        run_ui(self.p1.clone(), self.p2.clone(), ui_2.as_weak());
     }
 }
 
@@ -56,8 +62,53 @@ fn starting_player() -> i8 {
     }
 }
 
+fn run_ui(p1: player::Player, p2: player::Player, _ui: slint::Weak<AppWindow>) -> (i8, u128, u128) {
+    let ui_2: AppWindow = _ui.unwrap();
+    let mut board = board::new_board();
+    let mut players_turn = starting_player();
+    let mut d;
+    let mut d1 = 0;
+    let mut d2 = 0;
+    let mut d1_max = 0;
+    let mut d2_max = 0;
+    let mut ub;
+    println!("starting player is {}\n", players_turn);
+    loop {
+        let m;
+        let start = Instant::now();
+        if players_turn == 1 {
+            println!("player 1:");
+            m = p1.play(&board);
+            d = start.elapsed();
+            d1 += d.as_millis();
+            d1_max = d1_max.max(d.as_millis());
+        } else {
+            println!("player 2:");
+            m = p2.play(&board);
+            d = start.elapsed();
+            d2 += d.as_millis();
+            d2_max = d2_max.max(d.as_millis());
+        }
+        println!("Time is: {:?}", d);
+        ub = board::update_board(&mut board, m, players_turn);
+        ui::update_ui_board(board.clone(), ui_2.as_weak());
+        if players_turn == -1 {
+            println!();
+            // if ub == 0 {board::print_board(&board)}
+            // println!();
+        }
+        if ub != 0 {
+            break;
+        }
+        players_turn *= -1;
+    }
+    println!("players:");
+    println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
+    println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
+    (ub, d1_max, d2_max)
+}
 
-fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
+fn _run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
     let mut d;
@@ -105,7 +156,7 @@ fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
 pub fn _setup_game() {
     let p1 = player::_select_player( 1);
     let p2 = player::_select_player(-1);
-    run(p1, p2);
+    _run(p1, p2);
 }
 
 
@@ -118,7 +169,7 @@ mod tests {
     fn test_run_random() {
         let p1 = player::_select_player_in_code(1, 0);
         let p2 = player::_select_player_in_code(-1, 0);
-        let result = run(p1, p2);
+        let result = _run(p1, p2);
         assert_ne!(result.0, 0);
         assert_ne!(result.0.abs(), 2);
     }
@@ -132,7 +183,7 @@ mod tests {
         for _ in 0..10000 {
             let p1 = player::_select_player_in_code(1, 0);
             let p2 = player::_select_player_in_code(-1, 0);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             if result.0 == 3 {
@@ -157,7 +208,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 2);
             let p2 = player::_select_player_in_code(-1, 2);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -183,7 +234,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 3);
             let p2 = player::_select_player_in_code(-1, 3);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -209,7 +260,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 4);
             let p2 = player::_select_player_in_code(-1, 4);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -235,7 +286,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 2);
             let p2 = player::_select_player_in_code(-1, 3);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -260,7 +311,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 2);
             let p2 = player::_select_player_in_code(-1, 4);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -285,7 +336,7 @@ mod tests {
         for _ in 0..cycles {
             let p1 = player::_select_player_in_code(1, 3);
             let p2 = player::_select_player_in_code(-1, 4);
-            let result = run(p1, p2);
+            let result = _run(p1, p2);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);

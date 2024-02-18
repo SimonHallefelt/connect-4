@@ -1,8 +1,11 @@
 slint::include_modules!();
 
-use std::sync::{Arc, Mutex};
+use std::{rc::Rc, sync::{Arc, Mutex}};
+
+use slint::{ModelRc};
 
 use crate::game;
+use slint::VecModel;
 
 
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
@@ -37,10 +40,32 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
         move || {
             let ui = ui_handle.unwrap();
             if let Ok(game) = g.lock() {
-                game.game_run();
+                game.game_run(ui.as_weak());
             }
         }
     });
 
     ui.run()
+}
+
+pub fn update_ui_board(board: Vec<Vec<i8>>, ui: slint::Weak<AppWindow>) {
+    let mut new_board = vec![];
+    for i in 0..6 {
+        new_board.push(vec![]);
+        for j in 0..7 {
+            new_board[i].push(board[i][j] as i32);
+        }
+    }
+    let vm_0 = ModelRc::new(Rc::new(VecModel::from(new_board[0].clone())));
+    let vm_1 = ModelRc::new(Rc::new(VecModel::from(new_board[1].clone())));
+    let vm_2 = ModelRc::new(Rc::new(VecModel::from(new_board[2].clone())));
+    let vm_3 = ModelRc::new(Rc::new(VecModel::from(new_board[3].clone())));
+    let vm_4 = ModelRc::new(Rc::new(VecModel::from(new_board[4].clone())));
+    let vm_5 = ModelRc::new(Rc::new(VecModel::from(new_board[5].clone())));
+
+    let mr = vec![vm_0, vm_1, vm_2, vm_3, vm_4, vm_5];
+    let mr = ModelRc::new(Rc::new(VecModel::from(mr)));
+
+    let ui2 = ui.upgrade().unwrap();
+    ui2.set_board(mr);
 }
