@@ -40,7 +40,7 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
         move || {
             let ui = ui_handle.unwrap();
             if let Ok(game) = g.lock() {
-                game.game_run(ui.as_weak());
+                game.game_run(&ui);
             }
         }
     });
@@ -48,12 +48,16 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     ui.run()
 }
 
-pub fn update_ui_board(board: Vec<Vec<i8>>, ui: slint::Weak<AppWindow>) {
+pub fn update_ui_board(board: Vec<Vec<i8>>, ui: &AppWindow) {
     let mut new_board = vec![];
     for i in 0..6 {
         new_board.push(vec![]);
         for j in 0..7 {
-            new_board[i].push(board[i][j] as i32);
+            if board[i][j] == -1 {
+                new_board[i].push(2);
+            } else {
+                new_board[i].push(board[i][j] as i32);
+            }
         }
     }
     let vm_0 = ModelRc::new(Rc::new(VecModel::from(new_board[0].clone())));
@@ -66,6 +70,5 @@ pub fn update_ui_board(board: Vec<Vec<i8>>, ui: slint::Weak<AppWindow>) {
     let mr = vec![vm_0, vm_1, vm_2, vm_3, vm_4, vm_5];
     let mr = ModelRc::new(Rc::new(VecModel::from(mr)));
 
-    let ui2 = ui.upgrade().unwrap();
-    ui2.set_board(mr);
+    ui.set_board(mr);
 }

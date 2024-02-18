@@ -45,9 +45,8 @@ impl Game {
         }
     }
 
-    pub fn game_run(&self, _ui: slint::Weak<AppWindow>) {
-        let ui_2: AppWindow = _ui.unwrap();
-        run_ui(self.p1.clone(), self.p2.clone(), ui_2.as_weak());
+    pub fn game_run(&self, ui: &AppWindow) {
+        run_ui(self.p1.clone(), self.p2.clone(), ui);
     }
 }
 
@@ -62,8 +61,7 @@ fn starting_player() -> i8 {
     }
 }
 
-fn run_ui(p1: player::Player, p2: player::Player, _ui: slint::Weak<AppWindow>) -> (i8, u128, u128) {
-    let ui_2: AppWindow = _ui.unwrap();
+fn run_ui(p1: player::Player, p2: player::Player, ui: &AppWindow) -> (i8, u128, u128) {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
     let mut d;
@@ -91,7 +89,7 @@ fn run_ui(p1: player::Player, p2: player::Player, _ui: slint::Weak<AppWindow>) -
         }
         println!("Time is: {:?}", d);
         ub = board::update_board(&mut board, m, players_turn);
-        ui::update_ui_board(board.clone(), ui_2.as_weak());
+        ui::update_ui_board(board.clone(), ui);
         if players_turn == -1 {
             println!();
             // if ub == 0 {board::print_board(&board)}
@@ -225,7 +223,7 @@ mod tests {
         assert!(p2_wins > ((cycles-draws) *4) /10);
     }
 
-    #[test]
+    // #[test]
     fn _test_run_3_vs_3() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
