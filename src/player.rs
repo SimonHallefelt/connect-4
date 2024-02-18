@@ -11,7 +11,7 @@ pub struct Player {
 
 impl Player {
     fn new(player: i8, player_type: i8) -> Self {
-        println!("player: {} player_type: {}", player, player_type);
+        println!("player: {} player_type: {}\n", player, player_type);
         Self {
             player,
             player_type,
@@ -32,13 +32,11 @@ impl Player {
 pub fn select_player(player: i8) -> Player {
     let mut m: String;
     print_possible_players();
-    println!("enter your type of player: ");
     loop {
+        println!("enter type of player: ");
         m = String::new();
-        print!("enter your move: ");
         std::io::stdin().read_line(&mut m).unwrap();
         m = m.trim().to_string();
-        println!();
         match m.parse::<i8>() {
             Ok(_) => break,
             _ => continue,
