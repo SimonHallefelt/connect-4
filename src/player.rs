@@ -30,9 +30,9 @@ impl Player {
     }
 }
 
-pub fn select_player(player: i8) -> Player {
+pub fn _select_player(player: i8) -> Player {
     let mut m: String;
-    print_possible_players();
+    _print_possible_players();
     loop {
         println!("enter type of player: ");
         m = String::new();
@@ -53,7 +53,7 @@ pub fn _select_player_in_code(player: i8, player_type: i8) -> Player {
 }
 
 
-fn print_possible_players() {
+fn _print_possible_players() {
     println!("possible players: ");
     println!("0: Random");
     println!("1: Human");

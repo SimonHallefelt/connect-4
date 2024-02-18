@@ -102,9 +102,9 @@ fn run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
 }
 
 
-pub fn setup_game() {
-    let p1 = player::select_player( 1);
-    let p2 = player::select_player(-1);
+pub fn _setup_game() {
+    let p1 = player::_select_player( 1);
+    let p2 = player::_select_player(-1);
     run(p1, p2);
 }
 
