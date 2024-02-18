@@ -10,7 +10,6 @@ pub fn get_move(board: &Vec<Vec<i8>>, player: i8) -> i8 {
     }else {
         let new_board = flip(board);
         m = start_alpha_beta(&new_board, player*-1, depth);
-        return m;
     }
     println!("move: {}", m);
     return m;
