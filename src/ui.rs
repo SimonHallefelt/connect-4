@@ -2,10 +2,9 @@ slint::include_modules!();
 
 use std::sync::{Arc, Mutex};
 
-//import player
 use crate::game;
 
-// make a gui whit a button that increases a counter
+
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     let g = Arc::new(Mutex::new(game));
     let ui = AppWindow::new()?;

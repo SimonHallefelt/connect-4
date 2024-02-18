@@ -1,12 +1,12 @@
 mod board;
 mod player;
-mod gui;
+mod ui;
 mod game;
 
 
 fn main() {
     // game::_setup_game();
     let g = game::Game::new_game();
-    let gui = gui::example_gui(g);
-    println!("gui: {:?}", gui);
+    let ui = ui::example_gui(g);
+    println!("ui: {:?}", ui);
 }
