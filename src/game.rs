@@ -5,9 +5,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Instant;
 use rand::Rng;
-use slint::ComponentHandle;
 
-use crate::game;
 use crate::player;
 use crate::board;
 use crate::ui;
@@ -19,12 +17,12 @@ pub struct Game {
     p2: player::Player,
     board: Vec<Vec<i8>>,
     running: bool,
-    players_turn: i8,
-    d1: u128,
-    d2: u128,
-    d1_max: u128,
-    d2_max: u128,
-    ub: i8,
+    // players_turn: i8,
+    // d1: u128,
+    // d2: u128,
+    // d1_max: u128,
+    // d2_max: u128,
+    // ub: i8,
 }
 
 impl Game {
@@ -34,12 +32,12 @@ impl Game {
             p2: player::_select_player_in_code(-1, 0),
             board: board::new_board(),
             running: false,
-            players_turn: starting_player(),
-            d1: 0,
-            d2: 0,
-            d1_max: 0,
-            d2_max: 0,
-            ub: 0,
+            // players_turn: starting_player(),
+            // d1: 0,
+            // d2: 0,
+            // d1_max: 0,
+            // d2_max: 0,
+            // ub: 0,
         }
     }
 
@@ -131,7 +129,6 @@ fn run_ui_2(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
         }
         println!("Time is: {:?}", d);
         ub = board::update_board(&mut board, m, players_turn);
-        // game.board = board.clone();
         game.update_board(board.clone());
         if players_turn == -1 {
             println!();
@@ -143,7 +140,6 @@ fn run_ui_2(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
             break;
         }
         players_turn *= -1;
-        
     }
     println!("players:");
     println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
@@ -151,7 +147,7 @@ fn run_ui_2(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     (ub, d1_max, d2_max)
 }
 
-fn run_ui(p1: player::Player, p2: player::Player, ui: Arc<AppWindow>) -> (i8, u128, u128) {
+fn _run_ui(p1: player::Player, p2: player::Player, ui: Arc<AppWindow>) -> (i8, u128, u128) {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
     let mut d;
