@@ -1,6 +1,6 @@
 slint::include_modules!();
 
-use std::{rc::Rc, sync::{Arc, Mutex}};
+use std::{rc::Rc, sync::{Arc, Mutex}, thread};
 
 use slint::ModelRc;
 
@@ -11,7 +11,7 @@ use slint::VecModel;
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     let g = Arc::new(Mutex::new(game));
     let ui = Arc::new(AppWindow::new()?);
-
+    
     ui.on_set_player_type({
         let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
@@ -37,19 +37,28 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
         let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
         move || {
-            game::game_run_2(Arc::clone(&g));
-            loop {
-                let game = g.lock().unwrap();
-                update_ui_board(game.get_board(), Arc::clone(&ui));
-                if !game.get_running() {
-                    break;
-                }
-            }
+            game::game_run(Arc::clone(&g));
+            board_update_after_time(Arc::clone(&g), Arc::clone(&ui));
         }
     });
 
     ui.run()
 }
+
+
+
+fn board_update_after_time(g: Arc<Mutex<game::Game>>, ui: Arc<AppWindow>) {
+    loop {
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        let game = g.lock().unwrap();
+        update_ui_board(game.get_board(), Arc::clone(&ui));
+        if !game.get_running() {
+            break;
+        }
+    }
+}
+
+
 
 pub fn update_ui_board(board: Vec<Vec<i8>>, ui: Arc<AppWindow>) {
     let mut new_board = vec![];
