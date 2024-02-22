@@ -9,14 +9,14 @@ use slint::VecModel;
 
 
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
-    let g = Arc::new(Mutex::new(game));
-    let ui = AppWindow::new()?;
+    let mut g = Arc::new(Mutex::new(game));
+    let ui = Arc::new(AppWindow::new()?);
 
     ui.on_set_player_type({
-        let ui_handle = ui.as_weak();
+        let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
         move || {
-            let ui = ui_handle.unwrap();
+            // let ui = ui_handle;
             println!("ui: player: {}, player_type: {}", ui.get_player(), ui.get_player_type());
             let player = ui.get_player() as i8;
             let player_type = ui.get_player_type() as i8;
@@ -35,12 +35,19 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     });
 
     ui.on_request_run_game({
-        let ui_handle = ui.as_weak();
+        let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
         move || {
-            let ui = ui_handle.unwrap();
-            if let Ok(game) = g.lock() {
-                game.game_run(&ui);
+            game::game_run_2(Arc::clone(&g));
+            loop {
+                if let Ok(game) = g.lock() {
+                    if game.get_running() {
+                        update_ui_board(game.get_board(), Arc::clone(&ui));
+                    } else {
+                        update_ui_board(game.get_board(), Arc::clone(&ui));
+                        break;
+                    }
+                }
             }
         }
     });
@@ -48,7 +55,7 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     ui.run()
 }
 
-pub fn update_ui_board(board: Vec<Vec<i8>>, ui: &AppWindow) {
+pub fn update_ui_board(board: Vec<Vec<i8>>, ui: Arc<AppWindow>) {
     let mut new_board = vec![];
     for i in 0..6 {
         new_board.push(vec![]);

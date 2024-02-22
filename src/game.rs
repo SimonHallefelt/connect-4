@@ -1,9 +1,13 @@
 
 
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::thread;
 use std::time::Instant;
 use rand::Rng;
 use slint::ComponentHandle;
 
+use crate::game;
 use crate::player;
 use crate::board;
 use crate::ui;
@@ -13,7 +17,8 @@ use crate::ui::AppWindow;
 pub struct Game {
     p1: player::Player,
     p2: player::Player,
-    // board: board::Board,
+    board: Vec<Vec<i8>>,
+    running: bool,
     players_turn: i8,
     d1: u128,
     d2: u128,
@@ -27,7 +32,8 @@ impl Game {
         Game {
             p1: player::_select_player_in_code( 1, 0),
             p2: player::_select_player_in_code(-1, 0),
-            // board: board::new_board(),
+            board: board::new_board(),
+            running: false,
             players_turn: starting_player(),
             d1: 0,
             d2: 0,
@@ -45,9 +51,43 @@ impl Game {
         }
     }
 
-    pub fn game_run(&self, ui: &AppWindow) {
-        run_ui(self.p1.clone(), self.p2.clone(), ui);
+    fn update_board(&mut self, board_2: Vec<Vec<i8>>) {
+        self.board = board_2;
     }
+
+    pub fn get_board(&self) -> Vec<Vec<i8>> {
+        self.board.clone()
+    }
+
+    fn update_running(&mut self, running: bool) {
+        self.running = running;
+    }
+
+    pub fn get_running(&self) -> bool {
+        self.running
+    }
+
+    // pub fn game_run(&mut self, game: &mut Arc<Mutex<Game>>) {
+    //     self.running = true;
+    //     //let game = self;
+    //     let mut g = game;
+    //     thread::spawn(move || {
+    //         run_ui2(g);
+    //     });
+    // }
+}
+
+pub fn game_run_2(game: Arc<Mutex<Game>>) {
+    let g = Arc::clone(&game);
+    let mut game = g.lock().unwrap();
+    if game.running {
+        return;
+    }
+    game.update_running(true);
+    drop(game);
+    thread::spawn(move || {
+        run_ui_2(g);
+    });
 }
 
 
@@ -61,7 +101,57 @@ fn starting_player() -> i8 {
     }
 }
 
-fn run_ui(p1: player::Player, p2: player::Player, ui: &AppWindow) -> (i8, u128, u128) {
+fn run_ui_2(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
+    let mut board = board::new_board();
+    let mut players_turn = starting_player();
+    let mut d;
+    let mut d1 = 0;
+    let mut d2 = 0;
+    let mut d1_max = 0;
+    let mut d2_max = 0;
+    let mut ub;
+    println!("starting player is {}\n", players_turn);
+    loop {
+        let mut game = g.lock().unwrap();
+
+        let m;
+        let start = Instant::now();
+        if players_turn == 1 {
+            println!("player 1:");
+            m = game.p1.play(&board);
+            d = start.elapsed();
+            d1 += d.as_millis();
+            d1_max = d1_max.max(d.as_millis());
+        } else {
+            println!("player 2:");
+            m = game.p2.play(&board);
+            d = start.elapsed();
+            d2 += d.as_millis();
+            d2_max = d2_max.max(d.as_millis());
+        }
+        println!("Time is: {:?}", d);
+        ub = board::update_board(&mut board, m, players_turn);
+        // game.board = board.clone();
+        game.update_board(board.clone());
+        if players_turn == -1 {
+            println!();
+            if ub == 0 {board::print_board(&board)}
+            println!();
+        }
+        if ub != 0 {
+            game.update_running(false);
+            break;
+        }
+        players_turn *= -1;
+        
+    }
+    println!("players:");
+    println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
+    println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
+    (ub, d1_max, d2_max)
+}
+
+fn run_ui(p1: player::Player, p2: player::Player, ui: Arc<AppWindow>) -> (i8, u128, u128) {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
     let mut d;
@@ -89,7 +179,7 @@ fn run_ui(p1: player::Player, p2: player::Player, ui: &AppWindow) -> (i8, u128, 
         }
         println!("Time is: {:?}", d);
         ub = board::update_board(&mut board, m, players_turn);
-        ui::update_ui_board(board.clone(), ui);
+        ui::update_ui_board(board.clone(), Arc::clone(&ui));
         if players_turn == -1 {
             println!();
             // if ub == 0 {board::print_board(&board)}
