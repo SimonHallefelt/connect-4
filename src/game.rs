@@ -8,8 +8,6 @@ use rand::Rng;
 
 use crate::player;
 use crate::board;
-use crate::ui;
-use crate::ui::AppWindow;
 
 
 pub struct Game {

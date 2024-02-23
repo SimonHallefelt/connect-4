@@ -1,11 +1,9 @@
 slint::include_modules!();
 
-use std::{rc::Rc, sync::{Arc, Mutex}, thread};
-
-use slint::ModelRc;
+use std::{rc::Rc, sync::{Arc, Mutex}};
+use slint::{ModelRc, VecModel};
 
 use crate::game;
-use slint::VecModel;
 
 
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
