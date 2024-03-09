@@ -1,7 +1,9 @@
 slint::include_modules!();
 
 use std::{rc::Rc, sync::{Arc, Mutex}};
+use rand::Rng;
 use slint::{ModelRc, VecModel};
+use slint::{Timer, TimerMode};
 
 use crate::game;
 
@@ -9,7 +11,16 @@ use crate::game;
 pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     let g = Arc::new(Mutex::new(game));
     let ui = Arc::new(AppWindow::new()?);
-    
+
+    let ui_time = Arc::clone(&ui);
+    let g_time = Arc::clone(&g);
+    let timer = Timer::default();
+    timer.start(TimerMode::Repeated, std::time::Duration::from_millis(50), move || {
+        // println!("This will be printed every 50ms.");
+        let game = g_time.lock().unwrap();
+        update_ui_board(game.get_board(), Arc::clone(&ui_time));
+    });
+
     ui.on_set_player_type({
         let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
@@ -32,28 +43,13 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
     });
 
     ui.on_request_run_game({
-        let ui = Arc::clone(&ui);
         let g = Arc::clone(&g);
         move || {
             game::game_run(Arc::clone(&g));
-            board_update_after_time(Arc::clone(&g), Arc::clone(&ui));
         }
     });
 
     ui.run()
-}
-
-
-
-fn board_update_after_time(g: Arc<Mutex<game::Game>>, ui: Arc<AppWindow>) {
-    loop {
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        let game = g.lock().unwrap();
-        update_ui_board(game.get_board(), Arc::clone(&ui));
-        if !game.get_running() {
-            break;
-        }
-    }
 }
 
 
@@ -80,5 +76,5 @@ pub fn update_ui_board(board: Vec<Vec<i8>>, ui: Arc<AppWindow>) {
     let mr = vec![vm_0, vm_1, vm_2, vm_3, vm_4, vm_5];
     let mr = ModelRc::new(Rc::new(VecModel::from(mr)));
 
-    ui.set_board(mr);
+    ui.set_board(mr.into());
 }

@@ -6,8 +6,10 @@ export component AppWindow inherits Window {
     in-out property <int> player_1_type: 0;
     in-out property <int> player_2_type: 0;
     in-out property <[[int]]> board: [[0]];
+
     callback set_player_type();
     callback request_run_game();
+
     default-font-size: 15px;
     VerticalBox {
         Text {
