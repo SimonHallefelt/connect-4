@@ -54,6 +54,7 @@ pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
         if let Ok(mut game) = g.lock() {
             if game.get_running(){
                 println!("game is running, move selected: {}", index);
+                game.update_potential_move(index as i8);
             }
         }
     });

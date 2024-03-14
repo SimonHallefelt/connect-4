@@ -15,6 +15,7 @@ pub struct Game {
     p2: player::Player,
     board: Vec<Vec<i8>>,
     running: bool,
+    potential_move: i8,
     // players_turn: i8,
     // d1: u128,
     // d2: u128,
@@ -30,12 +31,7 @@ impl Game {
             p2: player::_select_player_in_code(-1, 0),
             board: board::new_board(),
             running: false,
-            // players_turn: starting_player(),
-            // d1: 0,
-            // d2: 0,
-            // d1_max: 0,
-            // d2_max: 0,
-            // ub: 0,
+            potential_move: -1,
         }
     }
 
@@ -45,6 +41,10 @@ impl Game {
         } else {
             self.p2 = player::_select_player_in_code(player, player_type);
         }
+    }
+
+    pub fn update_potential_move(&mut self, potential_move: i8) {
+        self.potential_move = potential_move;
     }
 
     fn update_board(&mut self, board_2: Vec<Vec<i8>>) {
@@ -104,13 +104,13 @@ fn run_ui(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
         let start = Instant::now();
         if players_turn == 1 {
             println!("player 1:");
-            m = p1.play(&board);
+            m = player_move(&board, &p1, g.clone());
             d = start.elapsed();
             d1 += d.as_millis();
             d1_max = d1_max.max(d.as_millis());
         } else {
             println!("player 2:");
-            m = p2.play(&board);
+            m = player_move(&board, &p2, g.clone());
             d = start.elapsed();
             d2 += d.as_millis();
             d2_max = d2_max.max(d.as_millis());
@@ -136,51 +136,72 @@ fn run_ui(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     (ub, d1_max, d2_max)
 }
 
-fn _run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
-    let mut board = board::new_board();
-    let mut players_turn = starting_player();
-    let mut d;
-    let mut d1 = 0;
-    let mut d2 = 0;
-    let mut d1_max = 0;
-    let mut d2_max = 0;
-    let mut ub;
-    println!("starting player is {}\n", players_turn);
-    loop {
-        let m;
-        let start = Instant::now();
-        if players_turn == 1 {
-            println!("player 1:");
-            m = p1.play(&board);
-            d = start.elapsed();
-            d1 += d.as_millis();
-            d1_max = d1_max.max(d.as_millis());
-        } else {
-            println!("player 2:");
-            m = p2.play(&board);
-            d = start.elapsed();
-            d2 += d.as_millis();
-            d2_max = d2_max.max(d.as_millis());
+// fn _run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
+//     let mut board = board::new_board();
+//     let mut players_turn = starting_player();
+//     let mut d;
+//     let mut d1 = 0;
+//     let mut d2 = 0;
+//     let mut d1_max = 0;
+//     let mut d2_max = 0;
+//     let mut ub;
+//     println!("starting player is {}\n", players_turn);
+//     loop {
+//         let m;
+//         let start = Instant::now();
+//         if players_turn == 1 {
+//             println!("player 1:");
+//             m = player_move(&board, &p1);
+//             d = start.elapsed();
+//             d1 += d.as_millis();
+//             d1_max = d1_max.max(d.as_millis());
+//         } else {
+//             println!("player 2:");
+//             m = player_move(&board, &p2);
+//             d = start.elapsed();
+//             d2 += d.as_millis();
+//             d2_max = d2_max.max(d.as_millis());
+//         }
+//         println!("Time is: {:?}", d);
+//         ub = board::update_board(&mut board, m, players_turn);
+//         if players_turn == -1 {
+//             println!();
+//             // if ub == 0 {board::print_board(&board)}
+//             // println!();
+//         }
+//         if ub != 0 {
+//             break;
+//         }
+//         players_turn *= -1;
+//     }
+//     println!("players:");
+//     println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
+//     println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
+//     (ub, d1_max, d2_max)
+// }
+
+
+
+fn player_move(board: &Vec<Vec<i8>>, player: &player::Player, game: Arc<Mutex<Game>>) -> i8 {
+    if player.get_player_type() == 5 {
+        loop {
+            thread::sleep(std::time::Duration::from_millis(10));
+            let mut g = game.lock().unwrap();
+            if g.potential_move == -1 {
+                continue;
+            }
+            let play = player.play(&board, g.potential_move);
+            if play != -1 {
+                g.update_potential_move(-1);
+                return play;
+            }
         }
-        println!("Time is: {:?}", d);
-        ub = board::update_board(&mut board, m, players_turn);
-        if players_turn == -1 {
-            println!();
-            // if ub == 0 {board::print_board(&board)}
-            // println!();
-        }
-        if ub != 0 {
-            break;
-        }
-        players_turn *= -1;
     }
-    println!("players:");
-    println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
-    println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
-    (ub, d1_max, d2_max)
+    player.play(&board, -1)
 }
 
 
+/*
 pub fn _setup_game() {
     let p1 = player::_select_player( 1);
     let p2 = player::_select_player(-1);
@@ -380,3 +401,4 @@ mod tests {
         assert!(false);
     }
 }
+*/
