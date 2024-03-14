@@ -73,7 +73,7 @@ pub fn game_run(game: Arc<Mutex<Game>>) {
     game.update_running(true);
     drop(game);
     thread::spawn(move || {
-        run_ui(g);
+        run(g);
     });
 }
 
@@ -85,7 +85,7 @@ fn starting_player() -> i8 {
     }
 }
 
-fn run_ui(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
+fn run(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     let mut board = board::new_board();
     let mut players_turn = starting_player();
     let mut d;
@@ -136,51 +136,6 @@ fn run_ui(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     (ub, d1_max, d2_max)
 }
 
-// fn _run(p1: player::Player, p2: player::Player) -> (i8, u128, u128) {
-//     let mut board = board::new_board();
-//     let mut players_turn = starting_player();
-//     let mut d;
-//     let mut d1 = 0;
-//     let mut d2 = 0;
-//     let mut d1_max = 0;
-//     let mut d2_max = 0;
-//     let mut ub;
-//     println!("starting player is {}\n", players_turn);
-//     loop {
-//         let m;
-//         let start = Instant::now();
-//         if players_turn == 1 {
-//             println!("player 1:");
-//             m = player_move(&board, &p1);
-//             d = start.elapsed();
-//             d1 += d.as_millis();
-//             d1_max = d1_max.max(d.as_millis());
-//         } else {
-//             println!("player 2:");
-//             m = player_move(&board, &p2);
-//             d = start.elapsed();
-//             d2 += d.as_millis();
-//             d2_max = d2_max.max(d.as_millis());
-//         }
-//         println!("Time is: {:?}", d);
-//         ub = board::update_board(&mut board, m, players_turn);
-//         if players_turn == -1 {
-//             println!();
-//             // if ub == 0 {board::print_board(&board)}
-//             // println!();
-//         }
-//         if ub != 0 {
-//             break;
-//         }
-//         players_turn *= -1;
-//     }
-//     println!("players:");
-//     println!("Time 1: {:?}s, Time 2: {:?}s", d1 / 1000, d2 / 1000);
-//     println!("ub: {}, d1_max: {}ms, d2_max: {}ms", ub, d1_max, d2_max);
-//     (ub, d1_max, d2_max)
-// }
-
-
 
 fn player_move(board: &Vec<Vec<i8>>, player: &player::Player, game: Arc<Mutex<Game>>) -> i8 {
     if player.get_player_type() == 5 {
@@ -201,11 +156,14 @@ fn player_move(board: &Vec<Vec<i8>>, player: &player::Player, game: Arc<Mutex<Ga
 }
 
 
-/*
+
 pub fn _setup_game() {
     let p1 = player::_select_player( 1);
     let p2 = player::_select_player(-1);
-    _run(p1, p2);
+    let mut g = Game::new_game();
+    g.p1 = p1;
+    g.p2 = p2;
+    run(Arc::new(Mutex::new(g)));
 }
 
 
@@ -214,11 +172,17 @@ pub fn _setup_game() {
 mod tests {
     use super::*;
 
+    fn make_game(p1: i8, p2: i8) -> Arc<Mutex<Game>> {
+        let mut g = Game::new_game();
+        g.p1 = player::_select_player_in_code( 1, p1);
+        g.p2 = player::_select_player_in_code(-1, p2);
+        Arc::new(Mutex::new(g))
+    }
+
     #[test]
     fn test_run_random() {
-        let p1 = player::_select_player_in_code(1, 0);
-        let p2 = player::_select_player_in_code(-1, 0);
-        let result = _run(p1, p2);
+        let g = make_game(0, 0);
+        let result = run(g);
         assert_ne!(result.0, 0);
         assert_ne!(result.0.abs(), 2);
     }
@@ -230,9 +194,8 @@ mod tests {
         let mut p2_wins = 0;
         let mut draws = 0;
         for _ in 0..10000 {
-            let p1 = player::_select_player_in_code(1, 0);
-            let p2 = player::_select_player_in_code(-1, 0);
-            let result = _run(p1, p2);
+            let g = make_game(0, 0);
+            let result = run(g);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
             if result.0 == 3 {
@@ -255,9 +218,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 2);
-            let p2 = player::_select_player_in_code(-1, 2);
-            let result = _run(p1, p2);
+            let g = make_game(2, 2);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -281,9 +243,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 3);
-            let p2 = player::_select_player_in_code(-1, 3);
-            let result = _run(p1, p2);
+            let g = make_game(3, 3);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -307,9 +268,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 4);
-            let p2 = player::_select_player_in_code(-1, 4);
-            let result = _run(p1, p2);
+            let g = make_game(4, 4);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -333,9 +293,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 2);
-            let p2 = player::_select_player_in_code(-1, 3);
-            let result = _run(p1, p2);
+            let g = make_game(2, 3);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -358,9 +317,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 2);
-            let p2 = player::_select_player_in_code(-1, 4);
-            let result = _run(p1, p2);
+            let g = make_game(2, 4);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -383,9 +341,8 @@ mod tests {
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let p1 = player::_select_player_in_code(1, 3);
-            let p2 = player::_select_player_in_code(-1, 4);
-            let result = _run(p1, p2);
+            let g = make_game(3, 4);
+            let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
             assert_ne!(result.0.abs(), 2);
@@ -401,4 +358,3 @@ mod tests {
         assert!(false);
     }
 }
-*/

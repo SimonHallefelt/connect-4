@@ -5,7 +5,7 @@ mod game;
 
 
 fn main() {
-    // game::_setup_game();
+    // game::_setup_game(); // run the game without the UI
     let g = game::Game::new_game();
     let ui = ui::example_gui(g);
     println!("ui: {:?}", ui);
