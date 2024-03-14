@@ -213,6 +213,31 @@ mod tests {
     }
 
     // #[test]
+    fn _test_run_1_vs_1() {
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        let cycles = 100;
+        for _ in 0..cycles {
+            let g = make_game(1, 1);
+            let result = run(g);
+            println!("results = {:?}", result);
+            assert_ne!(result.0, 0);
+            assert_ne!(result.0.abs(), 2);
+            if result.0 == 3 {
+                draws += 1;
+            } else if result.0 == 1 {
+                p1_wins += 1;
+            } else if result.0 == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        assert!(p1_wins > ((cycles-draws) *4) /10);
+        assert!(p2_wins > ((cycles-draws) *4) /10);
+    }
+
+    // #[test]
     fn _test_run_2_vs_2() {
         let mut p1_wins = 0;
         let mut p2_wins = 0;
@@ -263,13 +288,13 @@ mod tests {
     }
 
     // #[test]
-    fn _test_run_4_vs_4() {
+    fn _test_run_1_vs_2() {       // 40-60-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
-            let g = make_game(4, 4);
+            let g = make_game(1, 2);
             let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
@@ -283,66 +308,41 @@ mod tests {
             }
         }
         println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        assert!(p1_wins > ((cycles-draws) *4) /10);
-        assert!(p2_wins > ((cycles-draws) *4) /10);
+        assert!(false);
     }
 
     // #[test]
-    fn _test_run_2_vs_3() {       // 40-60-0
+    fn _test_run_1_vs_3() {       // 99-1-0
+        let mut p1_wins = 0;
+        let mut p2_wins = 0;
+        let mut draws = 0;
+        let cycles = 100;
+        for _ in 0..cycles {
+            let g = make_game(1, 3);
+            let result = run(g);
+            println!("results = {:?}", result);
+            assert_ne!(result.0, 0);
+            assert_ne!(result.0.abs(), 2);
+            if result.0 == 3 {
+                draws += 1;
+            } else if result.0 == 1 {
+                p1_wins += 1;
+            } else if result.0 == -1 {
+                p2_wins += 1;
+            }
+        }
+        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
+        assert!(false);
+    }
+
+    // #[test]
+    fn _test_run_2_vs_3() {       // 100-0-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
         let cycles = 100;
         for _ in 0..cycles {
             let g = make_game(2, 3);
-            let result = run(g);
-            println!("results = {:?}", result);
-            assert_ne!(result.0, 0);
-            assert_ne!(result.0.abs(), 2);
-            if result.0 == 3 {
-                draws += 1;
-            } else if result.0 == 1 {
-                p1_wins += 1;
-            } else if result.0 == -1 {
-                p2_wins += 1;
-            }
-        }
-        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        assert!(false);
-    }
-
-    // #[test]
-    fn _test_run_2_vs_4() {       // 99-1-0
-        let mut p1_wins = 0;
-        let mut p2_wins = 0;
-        let mut draws = 0;
-        let cycles = 100;
-        for _ in 0..cycles {
-            let g = make_game(2, 4);
-            let result = run(g);
-            println!("results = {:?}", result);
-            assert_ne!(result.0, 0);
-            assert_ne!(result.0.abs(), 2);
-            if result.0 == 3 {
-                draws += 1;
-            } else if result.0 == 1 {
-                p1_wins += 1;
-            } else if result.0 == -1 {
-                p2_wins += 1;
-            }
-        }
-        println!("\np1w: {} p2w: {} d: {}", p1_wins, p2_wins, draws);
-        assert!(false);
-    }
-
-    // #[test]
-    fn _test_run_3_vs_4() {       // 100-0-0
-        let mut p1_wins = 0;
-        let mut p2_wins = 0;
-        let mut draws = 0;
-        let cycles = 100;
-        for _ in 0..cycles {
-            let g = make_game(3, 4);
             let result = run(g);
             println!("results = {:?}", result);
             assert_ne!(result.0, 0);
