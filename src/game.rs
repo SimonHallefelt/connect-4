@@ -94,9 +94,10 @@ fn run(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     let mut d1_max = 0;
     let mut d2_max = 0;
     let mut ub;
-    let game = g.lock().unwrap();
+    let mut game = g.lock().unwrap();
     let p1 = game.p1.clone();
     let p2 = game.p2.clone();
+    game.update_board(board.clone());
     drop(game);
     println!("starting player is {}\n", players_turn);
     loop {

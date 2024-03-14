@@ -6,7 +6,7 @@ use slint::{Model, ModelRc, VecModel, Timer, TimerMode};
 use crate::game;
 
 
-pub fn example_gui(game: game::Game) -> Result<(), slint::PlatformError> {
+pub fn start_ui(game: game::Game) -> Result<(), slint::PlatformError> {
     let g = Arc::new(Mutex::new(game));
     let ui = Arc::new(AppWindow::new()?);
     
