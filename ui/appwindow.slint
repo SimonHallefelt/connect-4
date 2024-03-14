@@ -57,7 +57,7 @@ export component AppWindow inherits Window {
                 }
             }
             Button {
-                text: "Human";
+                text: "Bot";
                 clicked => {
                     root.player_type = 1;
                     root.player = Math.mod(root.player + 1, 2);
@@ -65,7 +65,7 @@ export component AppWindow inherits Window {
                 }
             }
             Button {
-                text: "Bot";
+                text: "Bit Bot";
                 clicked => {
                     root.player_type = 2;
                     root.player = Math.mod(root.player + 1, 2);
@@ -73,7 +73,7 @@ export component AppWindow inherits Window {
                 }
             }
             Button {
-                text: "Bit Bot";
+                text: "Bit Bot 2";
                 clicked => {
                     root.player_type = 3;
                     root.player = Math.mod(root.player + 1, 2);
@@ -81,17 +81,9 @@ export component AppWindow inherits Window {
                 }
             }
             Button {
-                text: "Bit Bot 2";
+                text: "Human";  // is human_ui player
                 clicked => {
-                    root.player_type = 4;
-                    root.player = Math.mod(root.player + 1, 2);
-                    root.set_player_type();
-                }
-            }
-            Button {
-                text: "Human ui";
-                clicked => {
-                    root.player_type = 5;
+                    root.player_type = 5;   // human_ui has 5 while human has 4
                     root.player = Math.mod(root.player + 1, 2);
                     root.set_player_type();
                 }
