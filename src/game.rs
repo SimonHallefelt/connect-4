@@ -16,6 +16,7 @@ pub struct Game {
     board: Vec<Vec<i8>>,
     running: bool,
     potential_move: i8,
+    won: i8,
     // players_turn: i8,
     // d1: u128,
     // d2: u128,
@@ -32,6 +33,7 @@ impl Game {
             board: board::new_board(),
             running: false,
             potential_move: -1,
+            won: 0,
         }
     }
 
@@ -61,6 +63,10 @@ impl Game {
 
     pub fn get_running(&self) -> bool {
         self.running
+    }
+
+    pub fn get_won(&self) -> i8 {
+        self.won
     }
 }
 
@@ -98,6 +104,7 @@ fn run(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
     let p1 = game.p1.clone();
     let p2 = game.p2.clone();
     game.update_board(board.clone());
+    game.won = 0;
     drop(game);
     println!("starting player is {}\n", players_turn);
     loop {
@@ -126,6 +133,7 @@ fn run(g: Arc<Mutex<Game>>) -> (i8, u128, u128) {
             println!();
         }
         if ub != 0 {
+            game.won = ub;
             game.update_running(false);
             break;
         }

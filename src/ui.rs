@@ -18,6 +18,7 @@ pub fn start_ui(game: game::Game) -> Result<(), slint::PlatformError> {
     timer.start(TimerMode::Repeated, std::time::Duration::from_millis(10), move || {
         // println!("This will be printed every 10ms.");
         let game = g_time.lock().unwrap();
+        set_winner(game.get_won(), Arc::clone(&ui_time));
         update_ui_board(game.get_board(), Arc::clone(&ui_time));
     });
 
@@ -97,21 +98,20 @@ pub fn update_ui_board(board: Vec<Vec<i8>>, ui: Arc<AppWindow>) {
     let mr = ModelRc::new(Rc::new(VecModel::from(mr)));
 
     ui.set_board(mr.into());
+}
 
-    // new board update
-    // let mut pieces = ui.get_pieces().iter().map(|p| p.clone()).collect::<Vec<pieceData>>();
-    // for i in 0..6 {
-    //     for j in 0..7 {
-    //         let index = i * 7 + j;
-    //         if board[i][j] == 0 {
-    //             pieces[index].player_piece = 0;
-    //         } else if board[i][j] == 1 {
-    //             pieces[index].player_piece = 1;
-    //         } else if board[i][j] == -1 {
-    //             pieces[index].player_piece = 2;
-    //         }
-    //     }
-    // }
-    // let pieces = ModelRc::new(Rc::new(VecModel::from(pieces)));
-    // ui.set_pieces(pieces.into());
+pub fn set_winner(won: i8, ui: Arc<AppWindow>) {
+    if won == 0 {
+        ui.set_won_massage("No winner yet".to_string().into());
+    } else if won == 1 {
+        ui.set_won_massage("Player 1 won".to_string().into());
+    } else if won == -1 {
+        ui.set_won_massage("Player 2 won".to_string().into());
+    } else if won == 2 {
+        ui.set_won_massage("Player 1 made illegal move, Player 2 win".to_string().into());
+    } else if won == -2 {
+        ui.set_won_massage("Player 2 made illegal move, Player 1 win".to_string().into());
+    } else if won == 3 {
+        ui.set_won_massage("Draw".to_string().into());
+    }
 }

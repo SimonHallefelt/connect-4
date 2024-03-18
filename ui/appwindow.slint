@@ -30,6 +30,7 @@ export component AppWindow inherits Window {
     in-out property <int> player_1_type: 0;
     in-out property <int> player_2_type: 0;
     in-out property <[[int]]> board: [[0]];
+    in property <string> won_massage: "no winner yet";
 
     in property <[pieceData]> pieces: [
         { playerr_piece: 0 },
@@ -103,6 +104,10 @@ export component AppWindow inherits Window {
         //     text: 
         //         "test counter: \{root.counter} \n";
         // }
+        Text {
+            text: 
+                "\{root.won_massage} \n";
+        }
         Rectangle {
             x: 0px;
             width: 420px;
