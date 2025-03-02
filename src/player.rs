@@ -2,7 +2,7 @@ mod human_player;
 mod random_player;
 mod bot_player;
 mod bit_bot_player;
-mod bit_bot_2_player;
+mod bit_bot_loop_player;
 mod human_player_ui;
 
 #[derive(Debug, Clone)]
@@ -28,8 +28,8 @@ impl Player {
         match self.player_type {
             5 => return human_player_ui::get_move(&board, potential_move),
             4 => return human_player::get_move(&board),
-            3 => return bit_bot_2_player::get_move(&board, self.player),
-            2 => return bit_bot_player::get_move(&board, self.player),
+            3 => return bit_bot_player::get_move(&board, self.player),
+            2 => return bit_bot_loop_player::get_move(&board, self.player),
             1 => return bot_player::get_move(&board, self.player),
             _ => return random_player::get_move(&board),
         }

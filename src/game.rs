@@ -296,7 +296,7 @@ mod tests {
     }
 
     // #[test]
-    fn _test_run_1_vs_2() {       // 40-60-0
+    fn _test_run_1_vs_2() {       // 99-1-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
@@ -320,7 +320,7 @@ mod tests {
     }
 
     // #[test]
-    fn _test_run_1_vs_3() {       // 99-1-0
+    fn _test_run_1_vs_3() {       // 40-60-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
@@ -344,7 +344,7 @@ mod tests {
     }
 
     // #[test]
-    fn _test_run_2_vs_3() {       // 100-0-0
+    fn _test_run_2_vs_3() {       // 0-100-0
         let mut p1_wins = 0;
         let mut p2_wins = 0;
         let mut draws = 0;
