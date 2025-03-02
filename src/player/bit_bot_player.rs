@@ -106,15 +106,9 @@ fn alpha_beta(mut alpha: i32, mut beta: i32, height: &mut Vec<i32>, bitboard: &m
 
 fn calc_win(bitboard: &Vec<i64>, counter: usize) -> bool {
     if (counter & 1) == 1 {
-        if is_win(bitboard[0]) {
-            return true;
-        }
-    } else {
-        if is_win(bitboard[1]) {
-            return true;
-        }
+        return is_win(bitboard[0])
     }
-    false
+    is_win(bitboard[1])
 }
 
 
