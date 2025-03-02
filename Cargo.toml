@@ -1,6 +1,6 @@
 [package]
 name = "connect-4"
-version = "0.1.0"
+version = "1.0"
 edition = "2021"
 default-run = "connect-4"
 build = "build.rs"
